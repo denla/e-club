@@ -50,7 +50,6 @@ const App: React.FC = () => {
     await signOut(auth);
     setCurrentUser(null);
   };
-
   if (loading) return <div>Загрузка...</div>;
 
   return (
