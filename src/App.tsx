@@ -58,7 +58,11 @@ const App: React.FC = () => {
       <Navbar currentUser={currentUser} onLogout={logout} />
       <Routes>
         <Route path="/" element={<Navigate to="/users" />} />
-        <Route path="/login" element={<Login />} />
+        <Route
+          path="/login"
+          element={<Login setCurrentUser={setCurrentUser} />}
+        />
+
         <Route path="/users" element={<UsersList users={users} />} />
         <Route
           path="/users/:uid"
