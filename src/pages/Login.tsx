@@ -3,9 +3,9 @@ import React, { useEffect, useState } from "react";
 
 const Login: React.FC = () => {
   const [tgUser, setTgUser] = useState<any>(null);
-  const [error, setError] = useState("");
+  // const [error, setError] = useState("");
 
-  // Мок-данные для разработки
+  // Мок-данные на случай, если WebApp недоступен
   const mockUser = {
     id: 123456,
     first_name: "Иван",
@@ -16,35 +16,24 @@ const Login: React.FC = () => {
   useEffect(() => {
     const tg = (window as any).Telegram?.WebApp;
 
-    // Если WebApp недоступен
     if (!tg) {
-      // В разработке используем мок-данные
-      if (process.env.NODE_ENV === "development") {
-        setTgUser(mockUser);
-        return;
-      }
-      setError("Откройте приложение внутри Telegram");
+      // WebApp недоступен → используем мок-данные
+      setTgUser(mockUser);
       return;
     }
 
     tg.ready(); // уведомляем Telegram, что WebApp готов
 
-    // Иногда initDataUnsafe появляется с задержкой
+    // Иногда initDataUnsafe приходит с небольшой задержкой
     setTimeout(() => {
       if (tg.initDataUnsafe) {
         setTgUser(tg.initDataUnsafe);
       } else {
-        setError("Не удалось получить данные пользователя Telegram");
+        setTgUser(mockUser); // если initDataUnsafe пуст, fallback на моки
       }
     }, 500);
   }, []);
 
-  // Вывод ошибок
-  if (error) {
-    return <div style={{ padding: 20, color: "red" }}>{error}</div>;
-  }
-
-  // Пока данные загружаются
   if (!tgUser) {
     return <div style={{ padding: 20 }}>Загрузка данных Telegram...</div>;
   }
@@ -69,7 +58,7 @@ const Login: React.FC = () => {
         </p>
       )}
 
-      {/* Отладка: показываем весь объект Telegram */}
+      {/* Отладка: выводим весь объект Telegram */}
       <h3>Debug Telegram WebApp:</h3>
       <pre>{JSON.stringify((window as any).Telegram, null, 2)}</pre>
     </div>
