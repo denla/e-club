@@ -2,9 +2,13 @@ import { useEffect, useState } from "react";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { db } from "../firebase";
 import { useTelegram } from "../hooks/useTelegram";
-import type { User, Visit } from "../types";
+import type { User } from "../types";
 
-export default function Login() {
+export default function Login({
+  onUserLoaded,
+}: {
+  onUserLoaded?: (user: User) => void;
+}) {
   const { user: tgUser, ready, isWebApp } = useTelegram();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
@@ -28,33 +32,21 @@ export default function Login() {
           firstName: tgUser.first_name || "",
           lastName: tgUser.last_name || "",
           email: tgUser.username ? `${tgUser.username}@telegram` : "",
-          role: "fan",
+          role: "fan", // стандартная роль
           visitsCount: 0,
           achievements: [],
           merchReceived: {},
           visits: [],
-          avatar: tgUser.photo_url || "", // сохраняем аватарку в Firebase
+          avatar: tgUser.photo_url || "",
         };
         await setDoc(userRef, finalUser);
       }
 
-      // --------------------------
-      // Объединяем Firebase + Telegram
-      const mergedUser = {
-        ...finalUser,
-        telegram: {
-          id: tgUser.id,
-          first_name: tgUser.first_name,
-          last_name: tgUser.last_name,
-          username: tgUser.username,
-          language_code: tgUser.language_code,
-          avatar: tgUser.photo_url || "", // аватарка
-        },
-      };
-      // --------------------------
-
-      setUser(mergedUser); // сохраняем в состояние
+      setUser(finalUser);
       setLoading(false);
+
+      // уведомляем родителя (App) о загрузке пользователя
+      if (onUserLoaded) onUserLoaded(finalUser);
     };
 
     createOrGetUser();
