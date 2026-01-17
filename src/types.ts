@@ -14,4 +14,5 @@ export type User = {
   achievements: number[];
   merchReceived: { [key: number]: boolean };
   visits: Visit[];
+  avatar?: string; // <--- добавили сюда аватарку
 };

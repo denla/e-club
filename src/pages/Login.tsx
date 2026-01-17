@@ -17,10 +17,12 @@ export default function Login() {
       const userRef = doc(db, "users", uid);
       const userSnap = await getDoc(userRef);
 
+      let finalUser: User;
+
       if (userSnap.exists()) {
-        setUser(userSnap.data() as User);
+        finalUser = userSnap.data() as User;
       } else {
-        const newUser: User = {
+        finalUser = {
           id: uid,
           uid: uid,
           firstName: tgUser.first_name || "",
@@ -30,12 +32,28 @@ export default function Login() {
           visitsCount: 0,
           achievements: [],
           merchReceived: {},
-          visits: [] as Visit[],
+          visits: [],
+          avatar: tgUser.photo_url || "", // сохраняем аватарку в Firebase
         };
-        await setDoc(userRef, newUser);
-        setUser(newUser);
+        await setDoc(userRef, finalUser);
       }
 
+      // --------------------------
+      // Объединяем Firebase + Telegram
+      const mergedUser = {
+        ...finalUser,
+        telegram: {
+          id: tgUser.id,
+          first_name: tgUser.first_name,
+          last_name: tgUser.last_name,
+          username: tgUser.username,
+          language_code: tgUser.language_code,
+          avatar: tgUser.photo_url || "", // аватарка
+        },
+      };
+      // --------------------------
+
+      setUser(mergedUser); // сохраняем в состояние
       setLoading(false);
     };
 
