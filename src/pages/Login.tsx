@@ -1,21 +1,16 @@
-import { useEffect, useState } from "react";
+import { useTelegram } from "../hooks/useTelegram";
 
 export default function Login() {
-  const [user, setUser] = useState<any>(null);
+  const { user, ready, isWebApp } = useTelegram();
 
-  useEffect(() => {
-    const tg = (window as any).Telegram?.WebApp;
+  if (!isWebApp) {
+    return (
+      <div>Пожалуйста, откройте это приложение через Telegram WebApp.</div>
+    );
+  }
 
-    if (!tg) {
-      alert("ЭТО НЕ TELEGRAM WEBAPP");
-      return;
-    }
-
-    tg.ready();
-    setUser(tg.initDataUnsafe.user);
-  }, []);
-
-  if (!user) return <div>Ждём данные…</div>;
+  if (!ready) return <div>Инициализация Telegram WebApp…</div>;
+  if (!user) return <div>Данные пользователя не получены.</div>;
 
   return (
     <div>
