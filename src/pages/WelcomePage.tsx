@@ -9,29 +9,20 @@ interface Props {
 }
 
 export const WelcomePage: React.FC<Props> = ({ onCreated }) => {
-  const { user: tgUser, ready, isWebApp } = useTelegram();
-  const [creating, setCreating] = useState(false);
+  const { user: tgUser } = useTelegram();
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  if (!isWebApp) {
-    return <div style={{ padding: 32 }}>Откройте через Telegram</div>;
-  }
-
-  if (!ready) {
-    return <div style={{ padding: 32 }}>Инициализация Telegram…</div>;
-  }
-
-  if (!tgUser) {
-    return (
-      <div style={{ padding: 32 }}>Не удалось получить данные Telegram</div>
-    );
-  }
-
   const handleCreate = async () => {
-    try {
-      setCreating(true);
-      setError(null);
+    if (!tgUser) {
+      setError("Telegram пользователь не найден");
+      return;
+    }
 
+    setLoading(true);
+    setError(null);
+
+    try {
       const uid = tgUser.id.toString();
 
       const newUser: User = {
@@ -56,52 +47,40 @@ export const WelcomePage: React.FC<Props> = ({ onCreated }) => {
         },
       };
 
-      console.log("🔥 Создаём пользователя в Firestore", newUser);
-
       await setDoc(doc(db, "users", uid), newUser);
 
-      console.log("✅ Пользователь создан");
-
       onCreated(newUser);
-    } catch (e) {
-      console.error(e);
-      setError("Ошибка создания аккаунта");
-      setCreating(false);
+    } catch (e: any) {
+      console.error("Firestore error:", e);
+      setError(e.message ?? "Ошибка создания аккаунта");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div
-      style={{
-        padding: 32,
-        textAlign: "center",
-        maxWidth: 420,
-        margin: "0 auto",
-      }}
-    >
+    <div style={{ padding: 32, textAlign: "center" }}>
       <h1>Добро пожаловать 👋</h1>
+      <p>Мы используем данные вашего Telegram</p>
 
-      <p style={{ opacity: 0.7 }}>Мы используем данные вашего Telegram</p>
+      {error && <p style={{ color: "red", marginTop: 12 }}>{error}</p>}
 
       <button
         onClick={handleCreate}
-        disabled={creating}
+        disabled={loading}
         style={{
           marginTop: 24,
           background: "orange",
           color: "#000",
-          padding: "14px 22px",
-          borderRadius: 14,
+          padding: "12px 20px",
+          borderRadius: 12,
           fontSize: 16,
           fontWeight: 600,
-          opacity: creating ? 0.6 : 1,
-          cursor: creating ? "default" : "pointer",
+          opacity: loading ? 0.6 : 1,
         }}
       >
-        {creating ? "Создаём аккаунт…" : "Создать аккаунт"}
+        {loading ? "Создаём аккаунт…" : "Создать аккаунт"}
       </button>
-
-      {error && <div style={{ marginTop: 16, color: "red" }}>{error}</div>}
     </div>
   );
 };
