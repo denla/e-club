@@ -1,4 +1,5 @@
-import { doc, setDoc } from "firebase/firestore";
+import { useEffect, useState } from "react";
+import { doc, getDoc, setDoc } from "firebase/firestore";
 import { db } from "../firebase";
 import { useTelegram } from "../hooks/useTelegram";
 import type { User } from "../types";
@@ -6,47 +7,81 @@ import type { User } from "../types";
 export default function Login({
   onUserLoaded,
 }: {
-  onUserLoaded: (user: User) => void;
+  onUserLoaded?: (user: User) => void;
 }) {
-  const { user: tgUser } = useTelegram();
+  const { user: tgUser, ready, isWebApp } = useTelegram();
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  const handleLogin = async () => {
-    if (!tgUser) return;
+  useEffect(() => {
+    if (!ready || !tgUser) return;
 
-    const uid = tgUser.id.toString();
+    const createOrGetUser = async () => {
+      const uid = tgUser.id.toString();
+      const userRef = doc(db, "users", uid);
+      const userSnap = await getDoc(userRef);
 
-    const newUser: User = {
-      id: uid,
-      uid,
-      firstName: tgUser.first_name || "",
-      lastName: tgUser.last_name || "",
-      email: tgUser.username ? `${tgUser.username}@telegram` : "",
-      role: "fan",
-      visitsCount: 0,
-      achievements: [],
-      merchReceived: {},
-      visits: [],
-      photo_url: (tgUser as any).photo_url ?? "",
-      telegram: {
-        id: tgUser.id,
-        first_name: tgUser.first_name,
-        last_name: tgUser.last_name,
-        username: tgUser.username,
-        language_code: tgUser.language_code,
-        photo_url: (tgUser as any).photo_url ?? "",
-      },
+      let finalUser: User;
+      let mergedUser: User;
+
+      // Проверяем, есть ли пользователь в Firestore
+      if (userSnap.exists()) {
+        finalUser = userSnap.data() as User;
+      } else {
+        // Создаём нового пользователя
+        finalUser = {
+          id: uid,
+          uid: uid,
+          firstName: tgUser.first_name || "",
+          lastName: tgUser.last_name || "",
+          email: tgUser.username ? `${tgUser.username}@telegram` : "",
+          role: "fan",
+          visitsCount: 0,
+          achievements: [],
+          merchReceived: {},
+          visits: [],
+          photo_url: (tgUser as any).photo_url ?? "", // безопасно
+        };
+
+        await setDoc(userRef, finalUser);
+      }
+
+      // Создаём mergedUser с Telegram данными
+      mergedUser = {
+        ...finalUser,
+        telegram: {
+          id: tgUser.id,
+          first_name: tgUser.first_name,
+          last_name: tgUser.last_name,
+          username: tgUser.username,
+          language_code: tgUser.language_code,
+          photo_url: (tgUser as any).photo_url ?? "", // безопасно
+        },
+      };
+
+      // Сохраняем в состоянии
+      setUser(mergedUser);
+      setLoading(false);
+
+      // Уведомляем родителя (App) о пользователе с ролью
+      if (onUserLoaded) onUserLoaded(finalUser);
     };
 
-    await setDoc(doc(db, "users", uid), newUser);
-    onUserLoaded(newUser);
-  };
+    createOrGetUser();
+  }, [ready, tgUser]);
+
+  if (!isWebApp) return <div>Пожалуйста, откройте через Telegram WebApp.</div>;
+  if (!ready) return <div>Инициализация Telegram WebApp…</div>;
+  if (loading) return <div>Загрузка данных пользователя…</div>;
+  if (!user) return <div>Не удалось получить пользователя.</div>;
 
   return (
-    <div style={{ padding: 32, textAlign: "center" }}>
-      <h1>Добро пожаловать 👋</h1>
-      <p>Войдите, чтобы начать</p>
+    <div style={{ maxWidth: 600, margin: "40px auto", padding: 20 }}>
+      <h2>Данные Telegram</h2>
+      <pre>{JSON.stringify(user.telegram, null, 2)}</pre>
 
-      <button onClick={handleLogin}>Войти через Telegram</button>
+      <h2>Данные из Firebase (с ролью)</h2>
+      <pre>{JSON.stringify(user, null, 2)}</pre>
     </div>
   );
 }

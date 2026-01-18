@@ -8,7 +8,8 @@ interface Props {
 
 export const BottomNav = ({ uid }: Props) => {
   const location = useLocation();
-  const profileLink = uid ? `/users/${uid}` : "/login";
+  //   const profileLink = uid ? `/users/${uid}` : "/login";
+  const profileLink = uid ? `/users/${uid}` : "/users";
 
   let active: "leaderboard" | "profile" | "admin" = "leaderboard";
   if (location.pathname.startsWith("/admin")) active = "admin";
