@@ -4,7 +4,7 @@ export type TelegramUser = {
   last_name?: string;
   username?: string;
   language_code?: string;
-  photo_url?: string;
+  photo_url?: string; // ✅ должно быть
 };
 
 export type User = {
@@ -19,5 +19,5 @@ export type User = {
   merchReceived: Record<string, boolean>;
   visits: { level: number; date: any }[];
   photo_url?: string;
-  telegram?: TelegramUser; // добавляем сюда
+  telegram?: TelegramUser;
 };

@@ -22,10 +22,25 @@ export default function Login({
       const userSnap = await getDoc(userRef);
 
       let finalUser: User;
+      let mergedUser: User;
 
       if (userSnap.exists()) {
+        // Пользователь уже есть в Firestore
         finalUser = userSnap.data() as User;
+
+        mergedUser = {
+          ...finalUser,
+          telegram: {
+            id: tgUser.id,
+            first_name: tgUser.first_name,
+            last_name: tgUser.last_name,
+            username: tgUser.username,
+            language_code: tgUser.language_code,
+            photo_url: tgUser.photo_url ?? "",
+          },
+        };
       } else {
+        // Создаём нового пользователя
         finalUser = {
           id: uid,
           uid: uid,
@@ -37,28 +52,29 @@ export default function Login({
           achievements: [],
           merchReceived: {},
           visits: [],
-          photo_url: tgUser.photo_url || "",
+          photo_url: tgUser.photo_url ?? "",
         };
+
         await setDoc(userRef, finalUser);
+
+        mergedUser = {
+          ...finalUser,
+          telegram: {
+            id: tgUser.id,
+            first_name: tgUser.first_name,
+            last_name: tgUser.last_name,
+            username: tgUser.username,
+            language_code: tgUser.language_code,
+            photo_url: tgUser.photo_url ?? "",
+          },
+        };
       }
-      // Сохраняем объект с ролью и Telegram-данными
-      const mergedUser: User = {
-        ...finalUser,
-        telegram: {
-          id: tgUser.id,
-          first_name: tgUser.first_name,
-          last_name: tgUser.last_name,
-          username: tgUser.username,
-          language_code: tgUser.language_code,
-          photo_url: tgUser.photo_url || "",
-        },
-      };
 
       setUser(mergedUser);
       setLoading(false);
 
       // уведомляем App о пользователе с ролью
-      if (onUserLoaded) onUserLoaded(finalUser); // finalUser — без telegram, с ролью
+      if (onUserLoaded) onUserLoaded(finalUser);
     };
 
     createOrGetUser();
