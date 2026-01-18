@@ -8,13 +8,12 @@ interface Props {
 
 export const BottomNav = ({ uid }: Props) => {
   const location = useLocation();
-  const profileLink = uid ? `/users/${uid}` : "/users";
+  const profileLink = uid ? `/users/${uid}` : "/login";
 
-  // Определяем активный пункт по пути
   let active: "leaderboard" | "profile" | "admin" = "leaderboard";
   if (location.pathname.startsWith("/admin")) active = "admin";
-  else if (location.pathname.startsWith("/profile")) active = "profile";
-  else if (location.pathname.startsWith("/users")) active = "leaderboard";
+  else if (location.pathname.startsWith("/users/")) active = "profile";
+  else if (location.pathname === "/users") active = "leaderboard";
 
   return (
     <nav className={styles.nav}>
@@ -27,7 +26,7 @@ export const BottomNav = ({ uid }: Props) => {
 
       <Link to="/admin">
         <button className={active === "admin" ? styles.active : ""}>
-          🏅
+          🛠
           <span>Админ</span>
         </button>
       </Link>
