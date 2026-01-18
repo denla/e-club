@@ -41,7 +41,6 @@ export default function Login({
         };
         await setDoc(userRef, finalUser);
       }
-
       // Сохраняем объект с ролью и Telegram-данными
       const mergedUser: User = {
         ...finalUser,
