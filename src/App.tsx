@@ -71,8 +71,8 @@ const App: React.FC = () => {
           path="/admin"
           element={
             <Admin
-              users={users}
-              tgId={currentUser?.telegram?.id ?? null} // передаём Telegram ID
+            // users={users}
+            // tgId={currentUser?.telegram?.id ?? null} // передаём Telegram ID
             />
           }
         />
