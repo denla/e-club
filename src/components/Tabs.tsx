@@ -12,7 +12,7 @@ const Tab = styled.button<{ active: boolean }>`
   flex: 1;
   padding: 10px 0;
   border-radius: 20px;
-  background: ${({ active, theme }) => (active ? "#fff" : "transparent")};
+  background: ${({ active }) => (active ? "#fff" : "transparent")};
   color: ${({ active }) => (active ? "#000" : "#fff")};
   font-weight: 500;
 `;
