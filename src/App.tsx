@@ -72,6 +72,7 @@ const App: React.FC = () => {
   if (!currentUser) {
     return (
       <WelcomePage
+        tgUser={tgUser}
         onCreated={(user) => {
           setCurrentUser(user);
         }}
