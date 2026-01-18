@@ -1,6 +1,6 @@
 import styles from "./LeaderboardPage.module.css";
 import { LeaderboardItem } from "../../features/LeaderboardItem/LeaderboardItem";
-import { BottomNav } from "../../features/BottomNav/BottomNav";
+// import { BottomNav } from "../../features/BottomNav/BottomNav";
 
 const mockUsers = Array.from({ length: 7 }).map((_, i) => ({
   id: i,
@@ -23,8 +23,8 @@ export const LeaderboardPage = () => {
           <LeaderboardItem key={user.id} user={user} />
         ))}
       </div>
-
-      <BottomNav active="leaderboard" />
+      {/* 
+      <BottomNav active="leaderboard" /> */}
     </div>
   );
 };

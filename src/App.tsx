@@ -19,6 +19,7 @@ import Admin from "./pages/Admin";
 import type { User } from "./types";
 
 import { LeaderboardPage } from "./pages/LeaderboardPage/LeaderboardPage";
+import { BottomNav } from "./features/BottomNav/BottomNav";
 
 const App: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
@@ -81,6 +82,7 @@ const App: React.FC = () => {
         />
         <Route path="*" element={<Navigate to="/users" />} />
       </Routes>
+      <BottomNav uid={currentUser?.uid} />
     </Router>
   );
 };

@@ -1,21 +1,43 @@
+// BottomNav.tsx
 import styles from "./BottomNav.module.css";
+import { Link, useLocation } from "react-router-dom";
 
 interface Props {
-  active: "leaderboard" | "profile";
+  uid?: string; // uid текущего пользователя
 }
 
-export const BottomNav = ({ active }: Props) => {
+export const BottomNav = ({ uid }: Props) => {
+  const location = useLocation();
+  const profileLink = uid ? `/profile/${uid}` : "/profile";
+
+  // Определяем активный пункт по пути
+  let active: "leaderboard" | "profile" | "admin" = "leaderboard";
+  if (location.pathname.startsWith("/admin")) active = "admin";
+  else if (location.pathname.startsWith("/profile")) active = "profile";
+  else if (location.pathname.startsWith("/users")) active = "leaderboard";
+
   return (
     <nav className={styles.nav}>
-      <button className={active === "leaderboard" ? styles.active : ""}>
-        🏅
-        <span>Лидерборд</span>
-      </button>
+      <Link to="/users">
+        <button className={active === "leaderboard" ? styles.active : ""}>
+          🏅
+          <span>Лидерборд</span>
+        </button>
+      </Link>
 
-      <button className={active === "profile" ? styles.active : ""}>
-        👤
-        <span>Профиль</span>
-      </button>
+      <Link to="/admin">
+        <button className={active === "admin" ? styles.active : ""}>
+          🏅
+          <span>Админ</span>
+        </button>
+      </Link>
+
+      <Link to={profileLink}>
+        <button className={active === "profile" ? styles.active : ""}>
+          👤
+          <span>Профиль</span>
+        </button>
+      </Link>
     </nav>
   );
 };

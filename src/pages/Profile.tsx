@@ -1,9 +1,16 @@
 import React from "react";
 import type { User } from "../types";
+import Tabs from "../features/Tabs/Tabs";
 
 type Props = { user?: User | null };
 
 const LEVELS = [2, 5, 8, 11, 14, 17, 20, 22, 25, 30];
+
+const tabItems = [
+  { label: "Home", content: <div>Добро пожаловать на главную страницу!</div> },
+  { label: "Profile", content: <div>Здесь ваш профиль.</div> },
+  { label: "Settings", content: <div>Настройки приложения.</div> },
+];
 
 const Profile: React.FC<Props> = ({ user }) => {
   if (!user) return <div>Загрузка профиля...</div>;
@@ -14,6 +21,8 @@ const Profile: React.FC<Props> = ({ user }) => {
         Профиль: {user.firstName} {user.lastName}
       </h2>
       <p>Посещено матчей: {user.visitsCount}</p>
+
+      <Tabs tabs={tabItems} />
 
       <h3>Дорожная карта</h3>
       <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
