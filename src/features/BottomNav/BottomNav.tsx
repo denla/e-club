@@ -8,7 +8,7 @@ interface Props {
 
 export const BottomNav = ({ uid }: Props) => {
   const location = useLocation();
-  const profileLink = uid ? `/profile/${uid}` : "/profile";
+  const profileLink = uid ? `/users/${uid}` : "/users";
 
   // Определяем активный пункт по пути
   let active: "leaderboard" | "profile" | "admin" = "leaderboard";
