@@ -24,21 +24,9 @@ export default function Login({
       let finalUser: User;
       let mergedUser: User;
 
+      // Проверяем, есть ли пользователь в Firestore
       if (userSnap.exists()) {
-        // Пользователь уже есть в Firestore
         finalUser = userSnap.data() as User;
-
-        mergedUser = {
-          ...finalUser,
-          telegram: {
-            id: tgUser.id,
-            first_name: tgUser.first_name,
-            last_name: tgUser.last_name,
-            username: tgUser.username,
-            language_code: tgUser.language_code,
-            photo_url: tgUser.photo_url ?? "",
-          },
-        };
       } else {
         // Создаём нового пользователя
         finalUser = {
@@ -47,33 +35,35 @@ export default function Login({
           firstName: tgUser.first_name || "",
           lastName: tgUser.last_name || "",
           email: tgUser.username ? `${tgUser.username}@telegram` : "",
-          role: "fan", // стандартная роль
+          role: "fan",
           visitsCount: 0,
           achievements: [],
           merchReceived: {},
           visits: [],
-          photo_url: tgUser.photo_url ?? "",
+          photo_url: (tgUser as any).photo_url ?? "", // безопасно
         };
 
         await setDoc(userRef, finalUser);
-
-        mergedUser = {
-          ...finalUser,
-          telegram: {
-            id: tgUser.id,
-            first_name: tgUser.first_name,
-            last_name: tgUser.last_name,
-            username: tgUser.username,
-            language_code: tgUser.language_code,
-            photo_url: tgUser.photo_url ?? "",
-          },
-        };
       }
 
+      // Создаём mergedUser с Telegram данными
+      mergedUser = {
+        ...finalUser,
+        telegram: {
+          id: tgUser.id,
+          first_name: tgUser.first_name,
+          last_name: tgUser.last_name,
+          username: tgUser.username,
+          language_code: tgUser.language_code,
+          photo_url: (tgUser as any).photo_url ?? "", // безопасно
+        },
+      };
+
+      // Сохраняем в состоянии
       setUser(mergedUser);
       setLoading(false);
 
-      // уведомляем App о пользователе с ролью
+      // Уведомляем родителя (App) о пользователе с ролью
       if (onUserLoaded) onUserLoaded(finalUser);
     };
 
