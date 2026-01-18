@@ -37,7 +37,7 @@ export default function Login({
           achievements: [],
           merchReceived: {},
           visits: [],
-          avatar: tgUser.photo_url || "",
+          photo_url: tgUser.photo_url || "",
         };
         await setDoc(userRef, finalUser);
       }

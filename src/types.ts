@@ -18,6 +18,6 @@ export type User = {
   achievements: number[];
   merchReceived: Record<string, boolean>;
   visits: { level: number; date: any }[];
-  avatar?: string;
+  photo_url?: string;
   telegram?: TelegramUser; // добавляем сюда
 };
