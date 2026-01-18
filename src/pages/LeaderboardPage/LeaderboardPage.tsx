@@ -1,30 +1,34 @@
 import styles from "./LeaderboardPage.module.css";
 import { LeaderboardItem } from "../../features/LeaderboardItem/LeaderboardItem";
-// import { BottomNav } from "../../features/BottomNav/BottomNav";
+import type { User as AppUser } from "../../types";
 
-const mockUsers = Array.from({ length: 7 }).map((_, i) => ({
-  id: i,
-  name: "Денис Иванов",
-  visits: 11,
-  rank: 1,
-}));
+type Props = {
+  users: AppUser[];
+};
 
-export const LeaderboardPage = () => {
+export const LeaderboardPage: React.FC<Props> = ({ users }) => {
+  const leaderboardUsers = [...users]
+    .sort((a, b) => b.visitsCount - a.visitsCount)
+    .map((user, index) => ({
+      uid: user.uid,
+      name: `${user.firstName} ${user.lastName}`,
+      visits: user.visitsCount,
+      rank: index + 1,
+    }));
+
   return (
     <div className={styles.page}>
       <header className={styles.header}>
-        <span className={styles.logo}>Z</span>
+        <span className={styles.logo}>Electron App</span>
       </header>
 
       <h1 className={styles.title}>Лидерборд</h1>
 
       <div className={styles.list}>
-        {mockUsers.map((user) => (
-          <LeaderboardItem key={user.id} user={user} />
+        {leaderboardUsers.map((user) => (
+          <LeaderboardItem key={user.uid} user={user} />
         ))}
       </div>
-      {/* 
-      <BottomNav active="leaderboard" /> */}
     </div>
   );
 };

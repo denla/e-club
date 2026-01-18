@@ -12,14 +12,17 @@ import { auth, db } from "./firebase";
 
 import Navbar from "./components/Navbar";
 import Login from "./pages/Login";
-// import UsersList from "./pages/UsersList";
-import Profile from "./pages/Profile";
 import Admin from "./pages/Admin";
 
 import type { User } from "./types";
 
 import { LeaderboardPage } from "./pages/LeaderboardPage/LeaderboardPage";
 import { BottomNav } from "./features/BottomNav/BottomNav";
+import { ProfilePage } from "./pages/ProfilePage/ProfilePage";
+
+/* =========================
+   APP
+========================= */
 
 const App: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
@@ -27,19 +30,25 @@ const App: React.FC = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Подписка на всех пользователей
+    /* --- подписка на пользователей --- */
     const unsubUsers = onSnapshot(collection(db, "users"), (snapshot) => {
       const usersData: User[] = snapshot.docs.map((doc) => doc.data() as User);
       setUsers(usersData);
     });
 
-    // Подписка на текущего пользователя (Firebase Auth)
+    /* --- авторизация --- */
     const unsubAuth = onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
         const docRef = doc(db, "users", firebaseUser.uid);
         const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) setCurrentUser(docSnap.data() as User);
-      } else setCurrentUser(null);
+
+        if (docSnap.exists()) {
+          setCurrentUser(docSnap.data() as User);
+        }
+      } else {
+        setCurrentUser(null);
+      }
+
       setLoading(false);
     });
 
@@ -54,34 +63,32 @@ const App: React.FC = () => {
     setCurrentUser(null);
   };
 
-  if (loading) return <div>Загрузка...</div>;
+  if (loading) {
+    return <div>Загрузка...</div>;
+  }
 
   return (
     <Router>
       <Navbar currentUser={currentUser} onLogout={logout} />
+
       <Routes>
         <Route path="/" element={<Navigate to="/users" />} />
+
         <Route
           path="/login"
           element={<Login onUserLoaded={setCurrentUser} />}
         />
-        <Route path="/users" element={<LeaderboardPage />} />
 
-        <Route
-          path="/users/:uid"
-          element={<UserProfileWrapper users={users} />}
-        />
-        <Route
-          path="/admin"
-          element={
-            <Admin
-            // users={users}
-            // tgId={currentUser?.telegram?.id ?? null} // передаём Telegram ID
-            />
-          }
-        />
+        <Route path="/users" element={<LeaderboardPage users={users} />} />
+
+        {/* ===== ПРОФИЛЬ ПОЛЬЗОВАТЕЛЯ ===== */}
+        <Route path="/users/:uid" element={<UserProfilePage users={users} />} />
+
+        <Route path="/admin" element={<Admin />} />
+
         <Route path="*" element={<Navigate to="/users" />} />
       </Routes>
+
       <BottomNav uid={currentUser?.uid} />
     </Router>
   );
@@ -89,9 +96,13 @@ const App: React.FC = () => {
 
 export default App;
 
-// Обертка для Profile с useParams
-const UserProfileWrapper: React.FC<{ users: User[] }> = ({ users }) => {
+/* =========================
+   PROFILE ROUTE WRAPPER
+========================= */
+
+const UserProfilePage: React.FC<{ users: User[] }> = ({ users }) => {
   const { uid } = useParams<{ uid: string }>();
   const user = users.find((u) => u.uid === uid);
-  return <Profile user={user} />;
+
+  return <ProfilePage user={user} />;
 };
