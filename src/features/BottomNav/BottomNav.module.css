@@ -1,0 +1,27 @@
+.nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 64px;
+  background: #000;
+  display: flex;
+  border-top: 1px solid #1e1e1e;
+}
+
+button {
+  flex: 1;
+  background: none;
+  border: none;
+  color: #777;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  gap: 4px;
+}
+
+.active {
+  color: #fff;
+}

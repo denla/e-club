@@ -12,11 +12,13 @@ import { auth, db } from "./firebase";
 
 import Navbar from "./components/Navbar";
 import Login from "./pages/Login";
-import UsersList from "./pages/UsersList";
+// import UsersList from "./pages/UsersList";
 import Profile from "./pages/Profile";
 import Admin from "./pages/Admin";
 
 import type { User } from "./types";
+
+import { LeaderboardPage } from "./pages/LeaderboardPage/LeaderboardPage";
 
 const App: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
@@ -62,7 +64,8 @@ const App: React.FC = () => {
           path="/login"
           element={<Login onUserLoaded={setCurrentUser} />}
         />
-        <Route path="/users" element={<UsersList users={users} />} />
+        <Route path="/users" element={<LeaderboardPage />} />
+
         <Route
           path="/users/:uid"
           element={<UserProfileWrapper users={users} />}
