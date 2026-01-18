@@ -4,7 +4,7 @@ import type { User } from "../types";
 
 type Props = {
   currentUser: User | null;
-  onLogout: () => void;
+  onLogout?: () => void;
 };
 
 const Navbar: React.FC<Props> = ({ currentUser, onLogout }) => {
