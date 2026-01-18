@@ -51,7 +51,7 @@ export default function Login({
           last_name: tgUser.last_name,
           username: tgUser.username,
           language_code: tgUser.language_code,
-          avatar: tgUser.photo_url || "",
+          photo_url: tgUser.photo_url || "",
         },
       };
 

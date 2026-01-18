@@ -4,7 +4,7 @@ export type TelegramUser = {
   last_name?: string;
   username?: string;
   language_code?: string;
-  avatar?: string;
+  photo_url?: string;
 };
 
 export type User = {
