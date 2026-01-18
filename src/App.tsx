@@ -1,122 +1,74 @@
-import React, { useEffect, useState } from "react";
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  Navigate,
-  useParams,
-} from "react-router-dom";
-import { collection, onSnapshot, doc, getDoc } from "firebase/firestore";
+import { useEffect, useState } from "react";
+import { doc, getDoc } from "firebase/firestore";
 import { db } from "./firebase";
+import WelcomePage from "./pages/WelcomePage";
 
-import Navbar from "./components/Navbar";
-import Login from "./pages/Login";
-import Admin from "./pages/Admin";
+export interface User {
+  id: string;
+  email: string;
+  createdAt: number;
+  telegram: {
+    id: number;
+    first_name: string;
+    last_name: string;
+    username: string | null;
+    language_code: string | null;
+    photo_url: string;
+  };
+}
 
-import type { User } from "./types";
+declare global {
+  interface Window {
+    Telegram?: any;
+  }
+}
 
-import { LeaderboardPage } from "./pages/LeaderboardPage/LeaderboardPage";
-import { BottomNav } from "./features/BottomNav/BottomNav";
-import { ProfilePage } from "./pages/ProfilePage/ProfilePage";
-import { WelcomePage } from "./pages/WelcomePage"; // 👈 новый экран
-import { useTelegram } from "./hooks/useTelegram";
+export default function App() {
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [tgUser, setTgUser] = useState<any>(null);
 
-/* =========================
-   APP
-========================= */
-
-const App: React.FC = () => {
-  const { user: tgUser, ready, isWebApp } = useTelegram();
-
-  const [users, setUsers] = useState<User[]>([]);
-  const [currentUser, setCurrentUser] = useState<User | null>(null);
-  const [checking, setChecking] = useState(true);
-
-  /* --- все пользователи --- */
   useEffect(() => {
-    const unsub = onSnapshot(collection(db, "users"), (snapshot) => {
-      setUsers(snapshot.docs.map((d) => d.data() as User));
-    });
-    return unsub;
+    const tg = window.Telegram?.WebApp;
+    tg?.ready();
+
+    const telegramUser = tg?.initDataUnsafe?.user;
+    if (!telegramUser) {
+      console.error("Нет Telegram пользователя");
+      setLoading(false);
+      return;
+    }
+
+    setTgUser(telegramUser);
+
+    const ref = doc(db, "users", String(telegramUser.id));
+
+    getDoc(ref)
+      .then((snap) => {
+        if (snap.exists()) {
+          setUser(snap.data() as User);
+        }
+      })
+      .finally(() => setLoading(false));
   }, []);
 
-  /* --- проверка профиля по Telegram UID --- */
-  useEffect(() => {
-    if (!ready || !tgUser) return;
-
-    const checkUser = async () => {
-      const uid = tgUser.id.toString();
-      const snap = await getDoc(doc(db, "users", uid));
-
-      if (snap.exists()) {
-        setCurrentUser(snap.data() as User);
-      }
-
-      setChecking(false);
-    };
-
-    checkUser();
-  }, [ready, tgUser]);
-
-  /* ===== ГЛОБАЛЬНЫЕ СОСТОЯНИЯ ===== */
-
-  if (!isWebApp) {
-    return <div>Пожалуйста, откройте через Telegram</div>;
+  if (loading) {
+    return <div style={{ padding: 24 }}>Загрузка…</div>;
   }
 
-  if (!ready || checking) {
-    return <div>Загрузка приложения…</div>;
-  }
-
-  /* ===== ПЕРВЫЙ ВХОД ===== */
-  if (!currentUser) {
+  if (!user) {
     return (
-      <WelcomePage
-        onCreated={(user) => {
-          setCurrentUser(user);
-        }}
-      />
+      <WelcomePage tgUser={tgUser} onCreated={(newUser) => setUser(newUser)} />
     );
   }
 
-  /* ===== ОСНОВНОЕ ПРИЛОЖЕНИЕ ===== */
-
   return (
-    <Router>
-      <Navbar currentUser={currentUser} />
-
-      <Routes>
-        <Route path="/" element={<Navigate to="/users" />} />
-
-        {/* Login остаётся, если он тебе нужен отдельно */}
-        <Route
-          path="/login"
-          element={<Login onUserLoaded={setCurrentUser} />}
-        />
-
-        <Route path="/users" element={<LeaderboardPage users={users} />} />
-
-        <Route path="/users/:uid" element={<UserProfilePage users={users} />} />
-
-        <Route path="/admin" element={<Admin />} />
-
-        <Route path="*" element={<Navigate to="/users" />} />
-      </Routes>
-
-      <BottomNav uid={currentUser.uid} />
-    </Router>
+    <div style={{ padding: 24 }}>
+      <h2>Профиль</h2>
+      <p>ID: {user.id}</p>
+      <p>Email: {user.email}</p>
+      <p>Имя: {user.telegram.first_name}</p>
+      <p>Username: {user.telegram.username ?? "—"}</p>
+    </div>
   );
-};
-
-export default App;
-
-/* =========================
-   PROFILE ROUTE WRAPPER
-========================= */
-
-const UserProfilePage: React.FC<{ users: User[] }> = ({ users }) => {
-  const { uid } = useParams<{ uid: string }>();
-  const user = users.find((u) => u.uid === uid);
-
-  return <ProfilePage user={user} />;
-};
+}

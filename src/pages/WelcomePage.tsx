@@ -1,86 +1,63 @@
 import { useState } from "react";
-import { doc, setDoc } from "firebase/firestore";
+import { doc, setDoc, serverTimestamp } from "firebase/firestore";
 import { db } from "../firebase";
-import { useTelegram } from "../hooks/useTelegram";
-import type { User } from "../types";
+import type { User } from "../App";
 
 interface Props {
+  tgUser: any;
   onCreated: (user: User) => void;
 }
 
-export const WelcomePage: React.FC<Props> = ({ onCreated }) => {
-  const { user: tgUser } = useTelegram();
+export default function WelcomePage({ tgUser, onCreated }: Props) {
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState("");
 
-  const handleCreate = async () => {
-    if (!tgUser) {
-      setError("Telegram пользователь не найден");
-      return;
-    }
-
-    setLoading(true);
-    setError(null);
-
+  const createAccount = async () => {
     try {
-      const uid = tgUser.id.toString();
+      setLoading(true);
+      setError("");
+
+      const userId = String(tgUser.id);
 
       const newUser: User = {
-        id: uid,
-        uid,
-        firstName: tgUser.first_name || "",
-        lastName: tgUser.last_name || "",
+        id: userId,
         email: tgUser.username ? `${tgUser.username}@telegram` : "",
-        role: "fan",
-        visitsCount: 0,
-        achievements: [],
-        merchReceived: {},
-        visits: [],
-        photo_url: (tgUser as any).photo_url ?? "",
+        createdAt: Date.now(),
         telegram: {
           id: tgUser.id,
-          first_name: tgUser.first_name,
-          last_name: tgUser.last_name,
-          username: tgUser.username,
-          language_code: tgUser.language_code,
-          photo_url: (tgUser as any).photo_url ?? "",
+          first_name: tgUser.first_name ?? "",
+          last_name: tgUser.last_name ?? "",
+          username: tgUser.username ?? null, // ❗ ВАЖНО
+          language_code: tgUser.language_code ?? null,
+          photo_url: tgUser.photo_url ?? "",
         },
       };
 
-      await setDoc(doc(db, "users", uid), newUser);
+      await setDoc(doc(db, "users", userId), {
+        ...newUser,
+        createdAt: serverTimestamp(),
+      });
 
       onCreated(newUser);
-    } catch (e: any) {
-      console.error("Firestore error:", e);
-      setError(e.message ?? "Ошибка создания аккаунта");
+    } catch (e) {
+      console.error(e);
+      setError("Ошибка создания аккаунта");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div style={{ padding: 32, textAlign: "center" }}>
-      <h1>Добро пожаловать 👋</h1>
-      <p>Мы используем данные вашего Telegram</p>
+    <div style={{ padding: 24 }}>
+      <h2>Создаём аккаунт</h2>
 
-      {error && <p style={{ color: "red", marginTop: 12 }}>{error}</p>}
+      <p>Привет, {tgUser.first_name} 👋</p>
 
-      <button
-        onClick={handleCreate}
-        disabled={loading}
-        style={{
-          marginTop: 24,
-          background: "orange",
-          color: "#000",
-          padding: "12px 20px",
-          borderRadius: 12,
-          fontSize: 16,
-          fontWeight: 600,
-          opacity: loading ? 0.6 : 1,
-        }}
-      >
-        {loading ? "Создаём аккаунт…" : "Создать аккаунт"}
+      {error && <p style={{ color: "red" }}>{error}</p>}
+
+      <button onClick={createAccount} disabled={loading}>
+        {loading ? "Создание…" : "Создать аккаунт"}
       </button>
     </div>
   );
-};
+}
