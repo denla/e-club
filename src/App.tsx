@@ -30,7 +30,7 @@ const App: React.FC = () => {
       setUsers(usersData);
     });
 
-    // Подписка на текущего пользователя
+    // Подписка на текущего пользователя (Firebase Auth)
     const unsubAuth = onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
         const docRef = doc(db, "users", firebaseUser.uid);
@@ -50,6 +50,7 @@ const App: React.FC = () => {
     await signOut(auth);
     setCurrentUser(null);
   };
+
   if (loading) return <div>Загрузка...</div>;
 
   return (
@@ -68,7 +69,12 @@ const App: React.FC = () => {
         />
         <Route
           path="/admin"
-          element={<Admin users={users} currentUser={currentUser} />}
+          element={
+            <Admin
+              users={users}
+              tgId={currentUser?.telegram?.id ?? null} // передаём Telegram ID
+            />
+          }
         />
         <Route path="*" element={<Navigate to="/users" />} />
       </Routes>

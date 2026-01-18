@@ -42,11 +42,24 @@ export default function Login({
         await setDoc(userRef, finalUser);
       }
 
-      setUser(finalUser);
+      // Сохраняем объект с ролью и Telegram-данными
+      const mergedUser: User = {
+        ...finalUser,
+        telegram: {
+          id: tgUser.id,
+          first_name: tgUser.first_name,
+          last_name: tgUser.last_name,
+          username: tgUser.username,
+          language_code: tgUser.language_code,
+          avatar: tgUser.photo_url || "",
+        },
+      };
+
+      setUser(mergedUser);
       setLoading(false);
 
-      // уведомляем родителя (App) о загрузке пользователя
-      if (onUserLoaded) onUserLoaded(finalUser);
+      // уведомляем App о пользователе с ролью
+      if (onUserLoaded) onUserLoaded(finalUser); // finalUser — без telegram, с ролью
     };
 
     createOrGetUser();
@@ -60,9 +73,9 @@ export default function Login({
   return (
     <div style={{ maxWidth: 600, margin: "40px auto", padding: 20 }}>
       <h2>Данные Telegram</h2>
-      <pre>{JSON.stringify(tgUser, null, 2)}</pre>
+      <pre>{JSON.stringify(user.telegram, null, 2)}</pre>
 
-      <h2>Данные из Firebase</h2>
+      <h2>Данные из Firebase (с ролью)</h2>
       <pre>{JSON.stringify(user, null, 2)}</pre>
     </div>
   );

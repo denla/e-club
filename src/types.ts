@@ -1,6 +1,10 @@
-export type Visit = {
-  level: number;
-  date: string;
+export type TelegramUser = {
+  id: number;
+  first_name: string;
+  last_name?: string;
+  username?: string;
+  language_code?: string;
+  avatar?: string;
 };
 
 export type User = {
@@ -12,7 +16,8 @@ export type User = {
   role: "fan" | "admin";
   visitsCount: number;
   achievements: number[];
-  merchReceived: { [key: number]: boolean };
-  visits: Visit[];
-  avatar?: string; // <--- добавили сюда аватарку
+  merchReceived: Record<string, boolean>;
+  visits: { level: number; date: any }[];
+  avatar?: string;
+  telegram?: TelegramUser; // добавляем сюда
 };

@@ -1,34 +1,22 @@
 import React from "react";
 import type { User } from "../types";
-import { doc, updateDoc, arrayUnion, Timestamp } from "firebase/firestore";
-import { db } from "../firebase";
-
-const levels: number[] = [2, 5, 8, 11, 14, 17, 20, 22, 25, 30];
-
-export const confirmVisit = async (u: User) => {
-  const newCount = u.visitsCount + 1;
-  const now = Timestamp.now();
-
-  try {
-    const userRef = doc(db, "users", u.uid);
-    await updateDoc(userRef, {
-      visitsCount: newCount,
-      visits: arrayUnion({ level: newCount, date: now }),
-      achievements: levels.filter((lvl) => newCount >= lvl),
-    });
-    alert(`Посещение добавлено: ${u.firstName} ${u.lastName}`);
-  } catch (err) {
-    console.error("Ошибка обновления пользователя:", err);
-  }
-};
+import { useCurrentUser } from "../hooks/useCurrentUser";
 
 type Props = {
   users: User[];
-  currentUser: User | null;
+  tgId: number | null; // Telegram ID текущего пользователя
 };
 
-const Admin: React.FC<Props> = ({ users, currentUser }) => {
-  // Проверка роли admin
+function confirmVisit(user: User) {
+  // Здесь логика подтверждения визита
+  alert(`Визит пользователя ${user.firstName} ${user.lastName} подтверждён!`);
+}
+
+const Admin: React.FC<Props> = ({ users, tgId }) => {
+  const { currentUser, loading } = useCurrentUser(tgId);
+
+  if (loading) return <div>Загрузка данных пользователя…</div>;
+
   if (!currentUser || currentUser.role !== "admin") {
     return (
       <div style={{ padding: 20 }}>
@@ -36,10 +24,6 @@ const Admin: React.FC<Props> = ({ users, currentUser }) => {
       </div>
     );
   }
-
-  const handleConfirm = (user: User) => {
-    confirmVisit(user);
-  };
 
   return (
     <div style={{ padding: 20 }}>
@@ -52,7 +36,7 @@ const Admin: React.FC<Props> = ({ users, currentUser }) => {
             <li key={u.uid}>
               {u.firstName} {u.lastName} — {u.visitsCount} матчей
               <button
-                onClick={() => handleConfirm(u)}
+                onClick={() => confirmVisit(u)}
                 style={{ marginLeft: 10 }}
               >
                 Подтвердить визит
