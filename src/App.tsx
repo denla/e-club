@@ -24,12 +24,23 @@ import WelcomePage from "./pages/WelcomePage";
 
 import type { User, TelegramUser } from "./types";
 
+// --- моковые данные для теста вне Telegram WebApp
+const MOCK_TG_USER: TelegramUser = {
+  id: 999999,
+  first_name: "Тест",
+  last_name: "Пользователь",
+  username: "testuser",
+  language_code: "ru",
+  photo_url: "https://via.placeholder.com/100",
+};
+
+const USE_MOCK = false; // true если тестируем в обычном браузере
+
 const App: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [needsRegistration, setNeedsRegistration] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
-
   useEffect(() => {
     const unsubUsers = onSnapshot(collection(db, "users"), (snapshot) => {
       const usersData: User[] = snapshot.docs.map((doc) => doc.data() as User);
@@ -37,25 +48,29 @@ const App: React.FC = () => {
     });
 
     const init = async () => {
-      const tgUser = window.Telegram?.WebApp?.initDataUnsafe?.user as
-        | TelegramUser
-        | undefined;
+      // Берём Telegram user или мок для теста
+      let tgUser: TelegramUser | undefined;
+
+      if (window.Telegram?.WebApp?.initDataUnsafe?.user) {
+        tgUser = window.Telegram.WebApp.initDataUnsafe.user as TelegramUser;
+      } else if (USE_MOCK) {
+        tgUser = MOCK_TG_USER;
+      }
 
       if (!tgUser) {
-        console.warn("Telegram user not found");
+        console.warn("Telegram user not found и USE_MOCK выключен");
         setLoading(false);
         return;
       }
 
       const uid = String(tgUser.id);
-      const docRef = doc(db, "users", uid);
-      const docSnap = await getDoc(docRef);
+      const docSnap = await getDoc(doc(db, "users", uid));
 
       if (docSnap.exists()) {
         setCurrentUser(docSnap.data() as User);
         setNeedsRegistration(false);
       } else {
-        setNeedsRegistration(true);
+        setNeedsRegistration(true); // <-- теперь WelcomePage появится
       }
 
       setLoading(false);
@@ -66,11 +81,13 @@ const App: React.FC = () => {
     return () => unsubUsers();
   }, []);
 
-  /* --- создание пользователя --- */
+  // --- создание нового пользователя
   const createAccount = async () => {
-    const tgUser = window.Telegram?.WebApp?.initDataUnsafe?.user as
-      | TelegramUser
-      | undefined;
+    const tgUser = USE_MOCK
+      ? MOCK_TG_USER
+      : (window.Telegram?.WebApp?.initDataUnsafe?.user as
+          | TelegramUser
+          | undefined);
 
     if (!tgUser) {
       console.error("Telegram user not found");
@@ -105,9 +122,12 @@ const App: React.FC = () => {
 
     setCurrentUser(newUser);
     setNeedsRegistration(false);
+    // users обновится автоматически через onSnapshot
   };
 
   if (loading) return <div>Загрузка...</div>;
+
+  // --- показываем WelcomePage, если нужно зарегистрироваться
   if (needsRegistration) return <WelcomePage onCreateAccount={createAccount} />;
 
   return (
@@ -129,10 +149,7 @@ const App: React.FC = () => {
 
 export default App;
 
-/* =========================
-   PROFILE ROUTE WRAPPER
-========================= */
-
+// --- профиль пользователя
 const UserProfilePage: React.FC<{ users: User[] }> = ({ users }) => {
   const { uid } = useParams();
   const user = users.find((u) => u.uid === uid);
