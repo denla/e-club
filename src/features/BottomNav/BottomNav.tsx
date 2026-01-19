@@ -18,21 +18,21 @@ export const BottomNav = ({ uid }: Props) => {
 
   return (
     <nav className={styles.nav}>
-      <Link to="/users">
+      <Link to="/users" className={styles.link}>
         <button className={active === "leaderboard" ? styles.active : ""}>
           🏅
           <span>Лидерборд</span>
         </button>
       </Link>
 
-      <Link to="/admin">
+      <Link to="/admin" className={styles.link}>
         <button className={active === "admin" ? styles.active : ""}>
           🛠
           <span>Админ</span>
         </button>
       </Link>
 
-      <Link to={profileLink}>
+      <Link to={profileLink} className={styles.link}>
         <button className={active === "profile" ? styles.active : ""}>
           👤
           <span>Профиль</span>

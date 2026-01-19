@@ -119,6 +119,7 @@ const Page = styled.div`
   max-width: 480px;
   margin: 0 auto;
   padding: 24px 16px 80px;
+  min-height: 100vh;
 `;
 
 const Center = styled.div`

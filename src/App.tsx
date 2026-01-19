@@ -15,7 +15,7 @@ import {
 } from "firebase/firestore";
 import { db } from "./firebase";
 
-import Navbar from "./components/Navbar";
+// import Navbar from "./components/Navbar";
 import Admin from "./pages/Admin";
 import { LeaderboardPage } from "./pages/LeaderboardPage/LeaderboardPage";
 import { BottomNav } from "./features/BottomNav/BottomNav";
@@ -147,7 +147,7 @@ const App: React.FC = () => {
 
   return (
     <Router>
-      <Navbar currentUser={currentUser} />
+      {/* <Navbar currentUser={currentUser} /> */}
 
       <Routes>
         <Route path="/" element={<Navigate to="/users" />} />
