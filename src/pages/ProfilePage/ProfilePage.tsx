@@ -5,6 +5,9 @@ import type { User } from "../../types";
 import { Avatar } from "../../components/Avatar";
 import { doc, setDoc } from "firebase/firestore";
 import { db } from "../../firebase";
+
+import { useNavigate } from "react-router-dom";
+
 /* =========================
    CONSTANTS
 ========================= */
@@ -23,6 +26,7 @@ interface Props {
 ========================= */
 
 export const ProfilePage: React.FC<Props> = ({ user, currentUser }) => {
+  const navigate = useNavigate();
   const [firstName, setFirstName] = useState(user?.firstName ?? "");
   const [lastName, setLastName] = useState(user?.lastName ?? "");
   const [editing, setEditing] = useState(false);
@@ -83,6 +87,10 @@ export const ProfilePage: React.FC<Props> = ({ user, currentUser }) => {
             </>
           )}
         </Name>
+
+        {isOwnProfile && (
+          <button onClick={() => navigate("/request")}>Создать заявку</button>
+        )}
 
         {user.telegram?.username && (
           <a href={`https://t.me/${user.telegram?.username}`}>
