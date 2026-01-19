@@ -152,7 +152,10 @@ const App: React.FC = () => {
       <Routes>
         <Route path="/" element={<Navigate to="/users" />} />
         <Route path="/users" element={<LeaderboardPage users={users} />} />
-        <Route path="/users/:uid" element={<UserProfilePage users={users} />} />
+        <Route
+          path="/users/:uid"
+          element={<UserProfilePage users={users} currentUser={currentUser} />}
+        />
         <Route path="/admin" element={<Admin />} />
         <Route path="*" element={<Navigate to="/users" />} />
       </Routes>
@@ -164,8 +167,11 @@ const App: React.FC = () => {
 
 export default App;
 
-const UserProfilePage: React.FC<{ users: User[] }> = ({ users }) => {
+const UserProfilePage: React.FC<{ users: User[]; currentUser: User }> = ({
+  users,
+  currentUser,
+}) => {
   const { uid } = useParams();
   const user = users.find((u) => u.uid === uid);
-  return <ProfilePage user={user} />;
+  return <ProfilePage user={user} currentUser={currentUser} />;
 };

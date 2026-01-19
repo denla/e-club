@@ -1,30 +1,53 @@
 import { Link } from "react-router-dom";
 import styles from "./LeaderboardItem.module.css";
 
+// Интерфейс пользователя для LeaderboardItem
+interface Telegram {
+  username?: string;
+  photo_url?: string;
+}
+
 interface User {
   uid: string;
-  name: string;
-  visits: number;
+  firstName: string;
+  lastName: string;
+  visitsCount: number;
   rank: number;
+  telegram?: Telegram;
 }
 
 interface Props {
   user: User;
 }
 
-export const LeaderboardItem = ({ user }: Props) => {
+export const LeaderboardItem: React.FC<Props> = ({ user }) => {
+  const avatarUrl = user.telegram?.photo_url;
+
   return (
     <Link to={`/users/${user.uid}`} className={styles.link}>
       <div className={styles.item}>
         <div className={styles.left}>
-          <div className={styles.avatar}>{user.name.slice(0, 1)}</div>
+          {/* Аватар */}
+          {avatarUrl ? (
+            <img
+              src={avatarUrl}
+              alt={`${user.firstName} ${user.lastName}`}
+              className={styles.avatarImage}
+            />
+          ) : (
+            <div className={styles.avatar}>{user.firstName[0]}</div>
+          )}
 
+          {/* Информация о пользователе */}
           <div className={styles.info}>
-            <div className={styles.name}>{user.name}</div>
-            <div className={styles.sub}>{user.visits} посещений</div>
+            <div className={styles.name}>
+              {user.firstName} {user.lastName}
+            </div>
+            <div className={styles.sub}>{user.visitsCount} посещений</div>
           </div>
         </div>
 
+        {/* Ранг */}
         <div className={styles.rank}>#{user.rank}</div>
       </div>
     </Link>

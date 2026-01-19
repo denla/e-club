@@ -7,14 +7,10 @@ type Props = {
 };
 
 export const LeaderboardPage: React.FC<Props> = ({ users }) => {
-  const leaderboardUsers = [...users]
-    .sort((a, b) => b.visitsCount - a.visitsCount)
-    .map((user, index) => ({
-      uid: user.uid,
-      name: `${user.firstName} ${user.lastName}`,
-      visits: user.visitsCount,
-      rank: index + 1,
-    }));
+  // Сортируем пользователей по количеству посещений и добавляем rank
+  const leaderboardUsers = [...users].sort(
+    (a, b) => b.visitsCount - a.visitsCount,
+  );
 
   return (
     <div className={styles.page}>
@@ -25,8 +21,11 @@ export const LeaderboardPage: React.FC<Props> = ({ users }) => {
       <h1 className={styles.title}>Лидерборд</h1>
 
       <div className={styles.list}>
-        {leaderboardUsers.map((user) => (
-          <LeaderboardItem key={user.uid} user={user} />
+        {leaderboardUsers.map((user, index) => (
+          <LeaderboardItem
+            key={user.uid}
+            user={{ ...user, rank: index + 1 }} // добавляем rank
+          />
         ))}
       </div>
     </div>

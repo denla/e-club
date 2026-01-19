@@ -2,6 +2,9 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import type { User } from "../../types";
 
+import { Avatar } from "../../components/Avatar";
+import { doc, setDoc } from "firebase/firestore";
+import { db } from "../../firebase";
 /* =========================
    CONSTANTS
 ========================= */
@@ -12,29 +15,80 @@ type TabType = "achievements" | "history";
 
 interface Props {
   user?: User | null;
+  currentUser?: User | null;
 }
 
 /* =========================
    COMPONENT
 ========================= */
 
-export const ProfilePage: React.FC<Props> = ({ user }) => {
+export const ProfilePage: React.FC<Props> = ({ user, currentUser }) => {
+  const [firstName, setFirstName] = useState(user?.firstName ?? "");
+  const [lastName, setLastName] = useState(user?.lastName ?? "");
+  const [editing, setEditing] = useState(false);
+
   const [tab, setTab] = useState<TabType>("achievements");
 
   if (!user) {
     return <Center>Загрузка профиля...</Center>;
   }
 
+  const isOwnProfile = currentUser?.uid === user.uid;
+
+  const saveName = async () => {
+    if (!user) return;
+
+    try {
+      // сохраняем в Firestore
+      await setDoc(doc(db, "users", user.uid), {
+        ...user,
+        firstName,
+        lastName,
+      });
+      setEditing(false);
+      alert("Имя успешно сохранено!");
+    } catch (err) {
+      console.error(err);
+      alert("Ошибка при сохранении имени");
+    }
+  };
+
   return (
     <Page>
       {/* ===== HEADER ===== */}
       <Header>
-        <Avatar>{user.firstName?.[0] ?? "?"}</Avatar>
-
+        <Avatar user={user} />
         <Name>
-          {user.firstName} {user.lastName}
+          {editing ? (
+            <>
+              <input
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
+                placeholder="Имя"
+              />
+              <input
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
+                placeholder="Фамилия"
+              />
+              <button onClick={saveName}>Сохранить</button>
+              <button onClick={() => setEditing(false)}>Отмена</button>
+            </>
+          ) : (
+            <>
+              {firstName} {lastName}
+              {isOwnProfile && (
+                <button onClick={() => setEditing(true)}>✏️</button>
+              )}
+            </>
+          )}
         </Name>
 
+        {user.telegram?.username && (
+          <a href={`https://t.me/${user.telegram?.username}`}>
+            @{user.telegram?.username}
+          </a>
+        )}
         <Stats>
           <StatCard>
             <StatValue>{user.visitsCount}</StatValue>
@@ -132,17 +186,17 @@ const Header = styled.div`
   margin-bottom: 24px;
 `;
 
-const Avatar = styled.div`
-  width: 72px;
-  height: 72px;
-  margin: 0 auto 12px;
-  border-radius: 50%;
-  background: #777;
-  display: grid;
-  place-items: center;
-  font-size: 32px;
-  font-weight: 600;
-`;
+// const Avatar = styled.div`
+//   width: 72px;
+//   height: 72px;
+//   margin: 0 auto 12px;
+//   border-radius: 50%;
+//   background: #777;
+//   display: grid;
+//   place-items: center;
+//   font-size: 32px;
+//   font-weight: 600;
+// `;
 
 const Name = styled.h2`
   margin: 0 0 16px;

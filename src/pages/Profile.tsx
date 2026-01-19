@@ -23,7 +23,6 @@ const Profile: React.FC<Props> = ({ user }) => {
       <p>Посещено матчей: {user.visitsCount}</p>
 
       <Tabs tabs={tabItems} />
-
       <h3>Дорожная карта</h3>
       <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
         {LEVELS.map((lvl) => {
@@ -49,7 +48,6 @@ const Profile: React.FC<Props> = ({ user }) => {
           );
         })}
       </div>
-
       <h3 style={{ marginTop: 20 }}>История подтверждённых матчей</h3>
       {user.visits && user.visits.length > 0 ? (
         <ul>
