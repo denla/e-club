@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "./firebase";
 import WelcomePage from "./pages/WelcomePage";
+import { useNavigate } from "react-router-dom";
 
 export interface User {
   id: string;
@@ -28,6 +29,8 @@ export default function App() {
   const [loading, setLoading] = useState(true);
   const [tgUser, setTgUser] = useState<any>(null);
 
+  const navigate = useNavigate();
+
   useEffect(() => {
     const tg = window.Telegram?.WebApp;
     tg?.ready();
@@ -49,7 +52,10 @@ export default function App() {
           setUser(snap.data() as User);
         }
       })
-      .finally(() => setLoading(false));
+      .finally(() => {
+        setLoading(false);
+        navigate("/users");
+      });
   }, []);
 
   if (loading) {
