@@ -17,17 +17,12 @@ import { db } from "./firebase";
 
 import Navbar from "./components/Navbar";
 import Admin from "./pages/Admin";
-
-import type { User, TelegramUser } from "./types";
-
 import { LeaderboardPage } from "./pages/LeaderboardPage/LeaderboardPage";
 import { BottomNav } from "./features/BottomNav/BottomNav";
 import { ProfilePage } from "./pages/ProfilePage/ProfilePage";
 import WelcomePage from "./pages/WelcomePage";
 
-/* =========================
-   APP
-========================= */
+import type { User, TelegramUser } from "./types";
 
 const App: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
@@ -36,13 +31,11 @@ const App: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    /* --- подписка на пользователей --- */
     const unsubUsers = onSnapshot(collection(db, "users"), (snapshot) => {
       const usersData: User[] = snapshot.docs.map((doc) => doc.data() as User);
       setUsers(usersData);
     });
 
-    /* --- инициализация Telegram пользователя --- */
     const init = async () => {
       const tgUser = window.Telegram?.WebApp?.initDataUnsafe?.user as
         | TelegramUser
@@ -70,9 +63,7 @@ const App: React.FC = () => {
 
     init();
 
-    return () => {
-      unsubUsers();
-    };
+    return () => unsubUsers();
   }, []);
 
   /* --- создание пользователя --- */
@@ -91,19 +82,23 @@ const App: React.FC = () => {
     const newUser: User = {
       id: uid,
       uid,
-
       firstName: tgUser.first_name,
       lastName: tgUser.last_name ?? "",
-      email: "",
-
+      email: tgUser.username ? `${tgUser.username}@telegram` : "",
       role: "fan",
       visitsCount: 0,
       achievements: [],
       merchReceived: {},
       visits: [],
-
-      photo_url: tgUser.photo_url,
-      telegram: tgUser,
+      photo_url: tgUser.photo_url ?? "",
+      telegram: {
+        id: tgUser.id,
+        first_name: tgUser.first_name,
+        last_name: tgUser.last_name ?? "",
+        username: tgUser.username,
+        language_code: tgUser.language_code,
+        photo_url: tgUser.photo_url ?? "",
+      },
     };
 
     await setDoc(doc(db, "users", uid), newUser);
@@ -112,13 +107,8 @@ const App: React.FC = () => {
     setNeedsRegistration(false);
   };
 
-  if (loading) {
-    return <div>Загрузка...</div>;
-  }
-
-  if (needsRegistration) {
-    return <WelcomePage onCreateAccount={createAccount} />;
-  }
+  if (loading) return <div>Загрузка...</div>;
+  if (needsRegistration) return <WelcomePage onCreateAccount={createAccount} />;
 
   return (
     <Router>
@@ -127,10 +117,7 @@ const App: React.FC = () => {
       <Routes>
         <Route path="/" element={<Navigate to="/users" />} />
         <Route path="/users" element={<LeaderboardPage users={users} />} />
-
-        {/* ===== ПРОФИЛЬ ПОЛЬЗОВАТЕЛЯ ===== */}
         <Route path="/users/:uid" element={<UserProfilePage users={users} />} />
-
         <Route path="/admin" element={<Admin />} />
         <Route path="*" element={<Navigate to="/users" />} />
       </Routes>
@@ -149,6 +136,5 @@ export default App;
 const UserProfilePage: React.FC<{ users: User[] }> = ({ users }) => {
   const { uid } = useParams();
   const user = users.find((u) => u.uid === uid);
-
   return <ProfilePage user={user} />;
 };

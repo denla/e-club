@@ -1,10 +1,23 @@
-import React from "react";
+import React, { useState } from "react";
 
 type Props = {
   onCreateAccount: () => Promise<void>;
 };
 
 const WelcomePage: React.FC<Props> = ({ onCreateAccount }) => {
+  const [loading, setLoading] = useState(false);
+
+  const handleCreate = async () => {
+    setLoading(true);
+    try {
+      await onCreateAccount();
+    } catch (err) {
+      console.error("Ошибка при создании аккаунта:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div
       style={{
@@ -23,7 +36,8 @@ const WelcomePage: React.FC<Props> = ({ onCreateAccount }) => {
       </p>
 
       <button
-        onClick={onCreateAccount}
+        onClick={handleCreate}
+        disabled={loading}
         style={{
           padding: "12px 24px",
           fontSize: 16,
@@ -32,9 +46,10 @@ const WelcomePage: React.FC<Props> = ({ onCreateAccount }) => {
           background: "#2ea6ff",
           color: "#fff",
           cursor: "pointer",
+          opacity: loading ? 0.7 : 1,
         }}
       >
-        Создать аккаунт
+        {loading ? "Создание..." : "Создать аккаунт"}
       </button>
     </div>
   );
