@@ -167,10 +167,10 @@ const App: React.FC = () => {
 
 export default App;
 
-const UserProfilePage: React.FC<{ users: User[]; currentUser: User }> = ({
-  users,
-  currentUser,
-}) => {
+const UserProfilePage: React.FC<{
+  users: User[];
+  currentUser: User | null;
+}> = ({ users, currentUser }) => {
   const { uid } = useParams();
   const user = users.find((u) => u.uid === uid);
   return <ProfilePage user={user} currentUser={currentUser} />;
