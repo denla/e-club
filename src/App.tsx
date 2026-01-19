@@ -124,8 +124,8 @@ const App: React.FC = () => {
         id: tgUser.id,
         first_name: tgUser.first_name,
         last_name: tgUser.last_name ?? "",
-        username: tgUser.username,
-        language_code: tgUser.language_code,
+        username: tgUser.username ?? "", // ✅ исправлено
+        language_code: tgUser.language_code ?? "", // ✅ исправлено
         photo_url: tgUser.photo_url ?? "",
       },
     };
@@ -133,7 +133,7 @@ const App: React.FC = () => {
     try {
       await setDoc(doc(db, "users", uid), newUser);
       setCurrentUser(newUser);
-      setNeedsRegistration(false); // закрываем WelcomePage
+      setNeedsRegistration(false);
       alert("Аккаунт успешно создан!");
     } catch (error) {
       alert("Ошибка при создании аккаунта: " + (error as any).message);
