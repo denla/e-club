@@ -1,55 +1,14 @@
-import { useState } from "react";
-import { doc, setDoc } from "firebase/firestore";
-import { db } from "../firebase";
+import React from "react";
 
-interface Props {
-  tgUser: any;
-  onCreated: (user: any) => void;
-}
+type Props = {
+  onCreateAccount: () => Promise<void>;
+};
 
-export default function WelcomePage({ tgUser, onCreated }: Props) {
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const handleCreate = async () => {
-    if (!tgUser) return;
-
-    try {
-      setLoading(true);
-      setError(null);
-
-      const uid = String(tgUser.id);
-
-      const userData = {
-        id: uid,
-        email: tgUser.username ? `${tgUser.username}@telegram` : "",
-        createdAt: Date.now(),
-
-        telegram: {
-          id: tgUser.id,
-          first_name: tgUser.first_name || "",
-          last_name: tgUser.last_name || "",
-          username: tgUser.username ?? null,
-          language_code: tgUser.language_code ?? null,
-          photo_url: tgUser.photo_url ?? "",
-        },
-      };
-
-      await setDoc(doc(db, "users", uid), userData);
-
-      onCreated(userData);
-    } catch (e) {
-      console.error("Ошибка создания аккаунта", e);
-      setError("Не удалось создать аккаунт");
-    } finally {
-      setLoading(false);
-    }
-  };
-
+const WelcomePage: React.FC<Props> = ({ onCreateAccount }) => {
   return (
     <div
       style={{
-        minHeight: "100vh",
+        height: "100vh",
         display: "flex",
         flexDirection: "column",
         justifyContent: "center",
@@ -59,26 +18,26 @@ export default function WelcomePage({ tgUser, onCreated }: Props) {
       }}
     >
       <h1>Добро пожаловать 👋</h1>
-      <p>Мы используем данные вашего Telegram</p>
-
-      {error && <div style={{ color: "red", marginTop: 12 }}>{error}</div>}
+      <p style={{ marginBottom: 24 }}>
+        Это ваш первый вход. Создайте аккаунт, чтобы продолжить.
+      </p>
 
       <button
-        onClick={handleCreate}
-        disabled={loading}
+        onClick={onCreateAccount}
         style={{
-          marginTop: 24,
-          background: "#ff9800",
-          color: "#000",
-          padding: "12px 20px",
-          borderRadius: 12,
+          padding: "12px 24px",
           fontSize: 16,
-          fontWeight: 600,
-          opacity: loading ? 0.6 : 1,
+          borderRadius: 8,
+          border: "none",
+          background: "#2ea6ff",
+          color: "#fff",
+          cursor: "pointer",
         }}
       >
-        {loading ? "Создаём аккаунт…" : "Создать аккаунт"}
+        Создать аккаунт
       </button>
     </div>
   );
-}
+};
+
+export default WelcomePage;

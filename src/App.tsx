@@ -6,19 +6,24 @@ import {
   Navigate,
   useParams,
 } from "react-router-dom";
-import { onAuthStateChanged, signOut } from "firebase/auth";
-import { collection, onSnapshot, doc, getDoc } from "firebase/firestore";
-import { auth, db } from "./firebase";
+import {
+  collection,
+  onSnapshot,
+  doc,
+  getDoc,
+  setDoc,
+} from "firebase/firestore";
+import { db } from "./firebase";
 
 import Navbar from "./components/Navbar";
-import Login from "./pages/Login";
 import Admin from "./pages/Admin";
 
-import type { User } from "./types";
+import type { User, TelegramUser } from "./types";
 
 import { LeaderboardPage } from "./pages/LeaderboardPage/LeaderboardPage";
 import { BottomNav } from "./features/BottomNav/BottomNav";
 import { ProfilePage } from "./pages/ProfilePage/ProfilePage";
+import WelcomePage from "./pages/WelcomePage";
 
 /* =========================
    APP
@@ -27,7 +32,8 @@ import { ProfilePage } from "./pages/ProfilePage/ProfilePage";
 const App: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [needsRegistration, setNeedsRegistration] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     /* --- подписка на пользователей --- */
@@ -36,56 +42,96 @@ const App: React.FC = () => {
       setUsers(usersData);
     });
 
-    /* --- авторизация --- */
-    const unsubAuth = onAuthStateChanged(auth, async (firebaseUser) => {
-      if (firebaseUser) {
-        const docRef = doc(db, "users", firebaseUser.uid);
-        const docSnap = await getDoc(docRef);
+    /* --- инициализация Telegram пользователя --- */
+    const init = async () => {
+      const tgUser = window.Telegram?.WebApp?.initDataUnsafe?.user as
+        | TelegramUser
+        | undefined;
 
-        if (docSnap.exists()) {
-          setCurrentUser(docSnap.data() as User);
-        }
+      if (!tgUser) {
+        console.warn("Telegram user not found");
+        setLoading(false);
+        return;
+      }
+
+      const uid = String(tgUser.id);
+      const docRef = doc(db, "users", uid);
+      const docSnap = await getDoc(docRef);
+
+      if (docSnap.exists()) {
+        setCurrentUser(docSnap.data() as User);
+        setNeedsRegistration(false);
       } else {
-        setCurrentUser(null);
+        setNeedsRegistration(true);
       }
 
       setLoading(false);
-    });
+    };
+
+    init();
 
     return () => {
       unsubUsers();
-      unsubAuth();
     };
   }, []);
 
-  const logout = async () => {
-    await signOut(auth);
-    setCurrentUser(null);
+  /* --- создание пользователя --- */
+  const createAccount = async () => {
+    const tgUser = window.Telegram?.WebApp?.initDataUnsafe?.user as
+      | TelegramUser
+      | undefined;
+
+    if (!tgUser) {
+      console.error("Telegram user not found");
+      return;
+    }
+
+    const uid = String(tgUser.id);
+
+    const newUser: User = {
+      id: uid,
+      uid,
+
+      firstName: tgUser.first_name,
+      lastName: tgUser.last_name ?? "",
+      email: "",
+
+      role: "fan",
+      visitsCount: 0,
+      achievements: [],
+      merchReceived: {},
+      visits: [],
+
+      photo_url: tgUser.photo_url,
+      telegram: tgUser,
+    };
+
+    await setDoc(doc(db, "users", uid), newUser);
+
+    setCurrentUser(newUser);
+    setNeedsRegistration(false);
   };
 
   if (loading) {
     return <div>Загрузка...</div>;
   }
 
+  if (needsRegistration) {
+    return <WelcomePage onCreateAccount={createAccount} />;
+  }
+
   return (
     <Router>
-      <Navbar currentUser={currentUser} onLogout={logout} />
+      <Navbar currentUser={currentUser} />
 
       <Routes>
         <Route path="/" element={<Navigate to="/users" />} />
-
-        <Route
-          path="/login"
-          element={<Login onUserLoaded={setCurrentUser} />}
-        />
-
         <Route path="/users" element={<LeaderboardPage users={users} />} />
 
         {/* ===== ПРОФИЛЬ ПОЛЬЗОВАТЕЛЯ ===== */}
         <Route path="/users/:uid" element={<UserProfilePage users={users} />} />
 
         <Route path="/admin" element={<Admin />} />
-
         <Route path="*" element={<Navigate to="/users" />} />
       </Routes>
 
@@ -101,7 +147,7 @@ export default App;
 ========================= */
 
 const UserProfilePage: React.FC<{ users: User[] }> = ({ users }) => {
-  const { uid } = useParams<{ uid: string }>();
+  const { uid } = useParams();
   const user = users.find((u) => u.uid === uid);
 
   return <ProfilePage user={user} />;
