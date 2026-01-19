@@ -1,88 +1,108 @@
-import { useEffect, useState } from "react";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { collection, doc, getDoc, onSnapshot } from "firebase/firestore";
-import { db } from "./firebase";
+import React, { useEffect, useState } from "react";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+  useParams,
+} from "react-router-dom";
+import { onAuthStateChanged, signOut } from "firebase/auth";
+import { collection, onSnapshot, doc, getDoc } from "firebase/firestore";
+import { auth, db } from "./firebase";
 
-import WelcomePage from "./pages/WelcomePage";
-import { LeaderboardPage } from "./pages/LeaderboardPage/LeaderboardPage";
+import Navbar from "./components/Navbar";
+import Login from "./pages/Login";
+import Admin from "./pages/Admin";
 
 import type { User } from "./types";
 
-declare global {
-  interface Window {
-    Telegram?: any;
-  }
-}
+import { LeaderboardPage } from "./pages/LeaderboardPage/LeaderboardPage";
+import { BottomNav } from "./features/BottomNav/BottomNav";
+import { ProfilePage } from "./pages/ProfilePage/ProfilePage";
 
-export default function App() {
+/* =========================
+   APP
+========================= */
+
+const App: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-  const [tgUser, setTgUser] = useState<any>(null);
 
-  /* ===== подписка на ВСЕХ пользователей ===== */
   useEffect(() => {
-    const unsub = onSnapshot(collection(db, "users"), (snap) => {
-      setUsers(snap.docs.map((d) => d.data() as User));
+    /* --- подписка на пользователей --- */
+    const unsubUsers = onSnapshot(collection(db, "users"), (snapshot) => {
+      const usersData: User[] = snapshot.docs.map((doc) => doc.data() as User);
+      setUsers(usersData);
     });
 
-    return unsub;
-  }, []);
+    /* --- авторизация --- */
+    const unsubAuth = onAuthStateChanged(auth, async (firebaseUser) => {
+      if (firebaseUser) {
+        const docRef = doc(db, "users", firebaseUser.uid);
+        const docSnap = await getDoc(docRef);
 
-  /* ===== проверка текущего пользователя ===== */
-  useEffect(() => {
-    const tg = window.Telegram?.WebApp;
-    tg?.ready();
-
-    const telegramUser = tg?.initDataUnsafe?.user;
-    if (!telegramUser) {
-      console.error("Нет Telegram пользователя");
-      setLoading(false);
-      return;
-    }
-
-    setTgUser(telegramUser);
-
-    const ref = doc(db, "users", String(telegramUser.id));
-
-    getDoc(ref)
-      .then((snap) => {
-        if (snap.exists()) {
-          setCurrentUser(snap.data() as User);
+        if (docSnap.exists()) {
+          setCurrentUser(docSnap.data() as User);
         }
-      })
-      .finally(() => setLoading(false));
+      } else {
+        setCurrentUser(null);
+      }
+
+      setLoading(false);
+    });
+
+    return () => {
+      unsubUsers();
+      unsubAuth();
+    };
   }, []);
+
+  const logout = async () => {
+    await signOut(auth);
+    setCurrentUser(null);
+  };
 
   if (loading) {
-    return <div style={{ padding: 24 }}>Загрузка…</div>;
+    return <div>Загрузка...</div>;
   }
 
   return (
-    <BrowserRouter>
-      <Routes>
-        {/* ===== ПЕРВЫЙ ВХОД ===== */}
-        {!currentUser && (
-          <Route
-            path="*"
-            element={
-              <WelcomePage
-                tgUser={tgUser}
-                onCreated={(user) => setCurrentUser(user)}
-              />
-            }
-          />
-        )}
+    <Router>
+      <Navbar currentUser={currentUser} onLogout={logout} />
 
-        {/* ===== ОСНОВНОЕ ПРИЛОЖЕНИЕ ===== */}
-        {currentUser && (
-          <>
-            <Route path="/" element={<Navigate to="/users" />} />
-            <Route path="/users" element={<LeaderboardPage users={users} />} />
-            <Route path="*" element={<Navigate to="/users" />} />
-          </>
-        )}
+      <Routes>
+        <Route path="/" element={<Navigate to="/users" />} />
+
+        <Route
+          path="/login"
+          element={<Login onUserLoaded={setCurrentUser} />}
+        />
+
+        <Route path="/users" element={<LeaderboardPage users={users} />} />
+
+        {/* ===== ПРОФИЛЬ ПОЛЬЗОВАТЕЛЯ ===== */}
+        <Route path="/users/:uid" element={<UserProfilePage users={users} />} />
+
+        <Route path="/admin" element={<Admin />} />
+
+        <Route path="*" element={<Navigate to="/users" />} />
       </Routes>
-    </BrowserRouter>
+
+      <BottomNav uid={currentUser?.uid} />
+    </Router>
   );
-}
+};
+
+export default App;
+
+/* =========================
+   PROFILE ROUTE WRAPPER
+========================= */
+
+const UserProfilePage: React.FC<{ users: User[] }> = ({ users }) => {
+  const { uid } = useParams<{ uid: string }>();
+  const user = users.find((u) => u.uid === uid);
+
+  return <ProfilePage user={user} />;
+};
