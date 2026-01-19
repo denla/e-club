@@ -34,21 +34,29 @@ const MOCK_TG_USER: TelegramUser = {
   photo_url: "https://via.placeholder.com/100",
 };
 
-const USE_MOCK = false; // true если тестируем в обычном браузере
+const USE_MOCK = false; // true для теста вне Telegram WebApp
 
 const App: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [needsRegistration, setNeedsRegistration] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
+  const [tgReady, setTgReady] = useState(false);
+
   useEffect(() => {
+    // --- подписка на всех пользователей Firestore
     const unsubUsers = onSnapshot(collection(db, "users"), (snapshot) => {
       const usersData: User[] = snapshot.docs.map((doc) => doc.data() as User);
       setUsers(usersData);
     });
 
+    // --- проверка Telegram WebApp готовности
+    if (window.Telegram?.WebApp) {
+      setTgReady(true);
+    }
+
+    // --- инициализация текущего пользователя
     const init = async () => {
-      // Берём Telegram user или мок для теста
       let tgUser: TelegramUser | undefined;
 
       if (window.Telegram?.WebApp?.initDataUnsafe?.user) {
@@ -58,7 +66,7 @@ const App: React.FC = () => {
       }
 
       if (!tgUser) {
-        console.warn("Telegram user not found и USE_MOCK выключен");
+        alert("Telegram user not found и USE_MOCK выключен!");
         setLoading(false);
         return;
       }
@@ -70,7 +78,7 @@ const App: React.FC = () => {
         setCurrentUser(docSnap.data() as User);
         setNeedsRegistration(false);
       } else {
-        setNeedsRegistration(true); // <-- теперь WelcomePage появится
+        setNeedsRegistration(true);
       }
 
       setLoading(false);
@@ -83,14 +91,18 @@ const App: React.FC = () => {
 
   // --- создание нового пользователя
   const createAccount = async () => {
-    const tgUser = USE_MOCK
-      ? MOCK_TG_USER
-      : (window.Telegram?.WebApp?.initDataUnsafe?.user as
-          | TelegramUser
-          | undefined);
+    let tgUser: TelegramUser | undefined;
+
+    if (USE_MOCK) {
+      tgUser = MOCK_TG_USER;
+    } else {
+      tgUser = window.Telegram?.WebApp?.initDataUnsafe?.user as
+        | TelegramUser
+        | undefined;
+    }
 
     if (!tgUser) {
-      console.error("Telegram user not found");
+      alert("Telegram WebApp ещё не готов! Попробуйте подождать секунду.");
       return;
     }
 
@@ -118,17 +130,20 @@ const App: React.FC = () => {
       },
     };
 
-    await setDoc(doc(db, "users", uid), newUser);
-
-    setCurrentUser(newUser);
-    setNeedsRegistration(false);
-    // users обновится автоматически через onSnapshot
+    try {
+      await setDoc(doc(db, "users", uid), newUser);
+      setCurrentUser(newUser);
+      setNeedsRegistration(false); // закрываем WelcomePage
+      alert("Аккаунт успешно создан!");
+    } catch (error) {
+      alert("Ошибка при создании аккаунта: " + (error as any).message);
+    }
   };
 
   if (loading) return <div>Загрузка...</div>;
 
-  // --- показываем WelcomePage, если нужно зарегистрироваться
-  if (needsRegistration) return <WelcomePage onCreateAccount={createAccount} />;
+  if (needsRegistration)
+    return <WelcomePage onCreateAccount={createAccount} tgReady={tgReady} />;
 
   return (
     <Router>
@@ -149,7 +164,6 @@ const App: React.FC = () => {
 
 export default App;
 
-// --- профиль пользователя
 const UserProfilePage: React.FC<{ users: User[] }> = ({ users }) => {
   const { uid } = useParams();
   const user = users.find((u) => u.uid === uid);

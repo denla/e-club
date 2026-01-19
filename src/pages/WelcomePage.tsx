@@ -1,23 +1,11 @@
-import React, { useState } from "react";
+import React from "react";
 
 type Props = {
   onCreateAccount: () => Promise<void>;
+  tgReady: boolean;
 };
 
-const WelcomePage: React.FC<Props> = ({ onCreateAccount }) => {
-  const [loading, setLoading] = useState(false);
-
-  const handleCreate = async () => {
-    setLoading(true);
-    try {
-      await onCreateAccount();
-    } catch (err) {
-      console.error("Ошибка при создании аккаунта:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
+const WelcomePage: React.FC<Props> = ({ onCreateAccount, tgReady }) => {
   return (
     <div
       style={{
@@ -36,8 +24,7 @@ const WelcomePage: React.FC<Props> = ({ onCreateAccount }) => {
       </p>
 
       <button
-        onClick={handleCreate}
-        disabled={loading}
+        onClick={tgReady ? onCreateAccount : undefined}
         style={{
           padding: "12px 24px",
           fontSize: 16,
@@ -45,11 +32,11 @@ const WelcomePage: React.FC<Props> = ({ onCreateAccount }) => {
           border: "none",
           background: "#2ea6ff",
           color: "#fff",
-          cursor: "pointer",
-          opacity: loading ? 0.7 : 1,
+          cursor: tgReady ? "pointer" : "not-allowed",
+          opacity: tgReady ? 1 : 0.5,
         }}
       >
-        {loading ? "Создание..." : "Создать аккаунт"}
+        Создать аккаунт
       </button>
     </div>
   );
