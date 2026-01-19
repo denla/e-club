@@ -1,22 +1,12 @@
 import { useEffect, useState } from "react";
-import { doc, getDoc } from "firebase/firestore";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { collection, doc, getDoc, onSnapshot } from "firebase/firestore";
 import { db } from "./firebase";
-import WelcomePage from "./pages/WelcomePage";
-import { useNavigate } from "react-router-dom";
 
-export interface User {
-  id: string;
-  email: string;
-  createdAt: number;
-  telegram: {
-    id: number;
-    first_name: string;
-    last_name: string;
-    username: string | null;
-    language_code: string | null;
-    photo_url: string;
-  };
-}
+import WelcomePage from "./pages/WelcomePage";
+import { LeaderboardPage } from "./pages/LeaderboardPage/LeaderboardPage";
+
+import type { User } from "./types";
 
 declare global {
   interface Window {
@@ -25,12 +15,21 @@ declare global {
 }
 
 export default function App() {
-  const [user, setUser] = useState<User | null>(null);
+  const [users, setUsers] = useState<User[]>([]);
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [tgUser, setTgUser] = useState<any>(null);
 
-  const navigate = useNavigate();
+  /* ===== подписка на ВСЕХ пользователей ===== */
+  useEffect(() => {
+    const unsub = onSnapshot(collection(db, "users"), (snap) => {
+      setUsers(snap.docs.map((d) => d.data() as User));
+    });
 
+    return unsub;
+  }, []);
+
+  /* ===== проверка текущего пользователя ===== */
   useEffect(() => {
     const tg = window.Telegram?.WebApp;
     tg?.ready();
@@ -49,32 +48,41 @@ export default function App() {
     getDoc(ref)
       .then((snap) => {
         if (snap.exists()) {
-          setUser(snap.data() as User);
+          setCurrentUser(snap.data() as User);
         }
       })
-      .finally(() => {
-        setLoading(false);
-        navigate("/users");
-      });
+      .finally(() => setLoading(false));
   }, []);
 
   if (loading) {
     return <div style={{ padding: 24 }}>Загрузка…</div>;
   }
 
-  if (!user) {
-    return (
-      <WelcomePage tgUser={tgUser} onCreated={(newUser) => setUser(newUser)} />
-    );
-  }
-
   return (
-    <div style={{ padding: 24 }}>
-      <h2>Профиль</h2>
-      <p>ID: {user.id}</p>
-      <p>Email: {user.email}</p>
-      <p>Имя: {user.telegram.first_name}</p>
-      <p>Username: {user.telegram.username ?? "—"}</p>
-    </div>
+    <BrowserRouter>
+      <Routes>
+        {/* ===== ПЕРВЫЙ ВХОД ===== */}
+        {!currentUser && (
+          <Route
+            path="*"
+            element={
+              <WelcomePage
+                tgUser={tgUser}
+                onCreated={(user) => setCurrentUser(user)}
+              />
+            }
+          />
+        )}
+
+        {/* ===== ОСНОВНОЕ ПРИЛОЖЕНИЕ ===== */}
+        {currentUser && (
+          <>
+            <Route path="/" element={<Navigate to="/users" />} />
+            <Route path="/users" element={<LeaderboardPage users={users} />} />
+            <Route path="*" element={<Navigate to="/users" />} />
+          </>
+        )}
+      </Routes>
+    </BrowserRouter>
   );
 }
