@@ -3,7 +3,7 @@
   bottom: 0;
   left: 0;
   right: 0;
-  height: 64px;
+  height: 68px;
   background: #000;
   display: flex;
   border-top: 1px solid #1e1e1e;
@@ -12,6 +12,8 @@
 .link {
   flex: 1; /* растягиваем ссылку на всю доступную ширину */
   text-align: center; /* чтобы кнопка внутри была по центру */
+  text-decoration: none;
+  color: inherit;
 }
 
 button {
@@ -19,15 +21,22 @@ button {
   height: 100%;
   background: none;
   border: none;
-  color: #777;
+  color: white !important;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   font-size: 12px;
   gap: 4px;
+  opacity: 0.7;
+  outline: none !important;
+  transition: 0.2s ease;
+}
+
+button:active {
+  transform: scale(0.95);
 }
 
 .active {
-  color: #fff;
+  opacity: 1;
 }
