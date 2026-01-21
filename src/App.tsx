@@ -25,6 +25,7 @@ import { RequestPage } from "./pages/RequestPage";
 import { AdminPage } from "./pages/AdminPage";
 
 import type { User, TelegramUser } from "./types";
+import Preloader from "./features/Preloader/Preloader";
 
 // --- моковые данные для теста вне Telegram WebApp
 const MOCK_TG_USER: TelegramUser = {
@@ -36,7 +37,7 @@ const MOCK_TG_USER: TelegramUser = {
   photo_url: "https://via.placeholder.com/100",
 };
 
-const USE_MOCK = false; // true для теста вне Telegram WebApp
+const USE_MOCK = true; // true для теста вне Telegram WebApp
 
 const App: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
@@ -142,7 +143,12 @@ const App: React.FC = () => {
     }
   };
 
-  if (loading) return <div>Загрузка...</div>;
+  if (loading)
+    return (
+      <div>
+        <Preloader />
+      </div>
+    );
 
   if (needsRegistration)
     return <WelcomePage onCreateAccount={createAccount} tgReady={tgReady} />;

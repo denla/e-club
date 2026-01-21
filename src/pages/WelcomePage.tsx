@@ -1,4 +1,4 @@
-import React from "react";
+import { WelcomeSlider } from "../features/WelcomeSlider/WelcomeSlider";
 
 type Props = {
   onCreateAccount: () => Promise<void>;
@@ -6,40 +6,7 @@ type Props = {
 };
 
 const WelcomePage: React.FC<Props> = ({ onCreateAccount, tgReady }) => {
-  return (
-    <div
-      style={{
-        height: "100vh",
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
-        alignItems: "center",
-        padding: 24,
-        textAlign: "center",
-      }}
-    >
-      <h1>Добро пожаловать 👋</h1>
-      <p style={{ marginBottom: 24 }}>
-        Это ваш первый вход. Создайте аккаунт, чтобы продолжить.
-      </p>
-
-      <button
-        onClick={tgReady ? onCreateAccount : undefined}
-        style={{
-          padding: "12px 24px",
-          fontSize: 16,
-          borderRadius: 8,
-          border: "none",
-          background: "#2ea6ff",
-          color: "#fff",
-          cursor: tgReady ? "pointer" : "not-allowed",
-          opacity: tgReady ? 1 : 0.5,
-        }}
-      >
-        Создать аккаунт
-      </button>
-    </div>
-  );
+  return <WelcomeSlider onCreateAccount={onCreateAccount} tgReady={tgReady} />;
 };
 
 export default WelcomePage;

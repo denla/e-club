@@ -1,0 +1,195 @@
+.wrapper {
+  min-height: 100vh;
+  background: #000;
+  color: #fff;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  width: 100vw;
+}
+
+.header {
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+  margin-top: 12px;
+  align-items: center;
+}
+
+.logo {
+  font-weight: 700;
+}
+
+.badge {
+  background: #ff5a00;
+  color: #000;
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 24px;
+  font-weight: 600;
+  font-family:
+    Disket Mono,
+    monospace;
+  height: fit-content;
+}
+
+.viewport {
+  flex: 1;
+  overflow: hidden;
+}
+
+.track {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.4s ease;
+}
+
+/* .slide {
+  min-width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 16px;
+  padding: 0 16px;
+} */
+
+.image {
+  width: 220px;
+}
+.logoImage {
+  height: 36px;
+}
+
+.title {
+  font-size: 32px;
+  font-weight: 700;
+}
+
+.text {
+  font-size: 14px;
+  color: #bdbdbd;
+  max-width: 300px;
+  text-align: center;
+}
+
+.indicators {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+.dot {
+  width: 16px;
+  height: 4px;
+  background: #333;
+  overflow: hidden;
+  border-radius: 2px;
+}
+
+.progress {
+  height: 100%;
+  background: #fff;
+  transform-origin: left;
+}
+
+.button {
+  background: #ff5a00;
+  border: none;
+  color: #000;
+  font-weight: 700;
+  padding: 16px;
+  border-radius: 12px;
+  margin-bottom: 16px;
+  font-family: "Disket Mono", monospace;
+  transition: 0.2s ease;
+  outline: none;
+}
+
+.button:hover {
+  background: #ff742e;
+}
+
+.indicator {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #555;
+  border: none;
+  padding: 0;
+  position: relative;
+  transition: 0.15s ease;
+}
+
+.active {
+  width: 24px;
+  height: 6px;
+  border-radius: 12px;
+  background: #333;
+  overflow: hidden;
+  transition: 0.15s ease;
+}
+
+.progress {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 100%;
+  background: #fff;
+  transform-origin: left;
+  transition: 0.15s ease;
+}
+
+.viewport {
+  flex: 1; /* растягиваем viewport между header и кнопкой */
+  display: flex; /* flex row для track */
+  flex-direction: row; /* по умолчанию row, можно не указывать */
+  overflow: hidden;
+}
+
+.track {
+  display: flex; /* horizontal slider */
+  flex: 1; /* ОЧЕНЬ важно — занимает всю высоту viewport */
+}
+
+.slide {
+  min-width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start; /* или space-between, если хочешь заголовок снизу */
+  align-items: center;
+  padding: 0 16px;
+  height: calc(100vh - 250px);
+}
+
+.img_wrapper {
+  flex: 1 1 auto; /* занимает всё доступное пространство */
+  min-height: 0; /* важно для корректного расчёта flex */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@keyframes scaleUp {
+  0% {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.image {
+  max-height: 100%;
+  width: 300px;
+  object-fit: contain;
+  /* добавляем анимацию появления */
+  animation: scaleUp 0.3s ease forwards;
+}

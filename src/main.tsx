@@ -8,6 +8,8 @@ import { GlobalStyles } from "./styles/GlobalStyles";
 import { theme } from "./styles/theme";
 import { ThemeProvider } from "styled-components";
 
+import "./fonts.css"; // ← тут
+
 createRoot(document.getElementById("root")!).render(
   <ThemeProvider theme={theme}>
     <GlobalStyles />
