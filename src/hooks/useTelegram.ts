@@ -25,6 +25,9 @@ export function useTelegram() {
     // Инициализация WebApp
     tg.ready();
 
+    // Расширяем окно WebApp
+    tg.expand();
+
     // Получаем данные пользователя
     const tgUser = tg.initDataUnsafe?.user;
     if (tgUser) {
