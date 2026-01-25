@@ -5,7 +5,7 @@ import type { User } from "../../types";
 import { Avatar } from "../../components/Avatar";
 import { doc, setDoc } from "firebase/firestore";
 import { db } from "../../firebase";
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
 
 import { Drawer } from "../../components/Drawer";
 
@@ -128,7 +128,7 @@ export const ProfilePage: React.FC<Props> = ({
   currentUser,
   allUsers,
 }) => {
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const [firstName, setFirstName] = useState(user?.firstName ?? "");
   const [lastName, setLastName] = useState(user?.lastName ?? "");
   const [editing, setEditing] = useState(false);
