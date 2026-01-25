@@ -3,8 +3,9 @@ import styled from "styled-components";
 import type { User } from "../../types";
 
 import { Avatar } from "../../components/Avatar";
-import { doc, setDoc } from "firebase/firestore";
+import { doc, setDoc, updateDoc } from "firebase/firestore";
 import { db } from "../../firebase";
+
 // import { useNavigate } from "react-router-dom";
 
 import { Drawer } from "../../components/Drawer";
@@ -211,6 +212,25 @@ export const ProfilePage: React.FC<Props> = ({
               Редактировать
             </SecondaryButton>
           </>
+        )}
+
+        {currentUser?.role === "admin" && currentUser.uid !== user.uid && (
+          <AccentButton
+            onClick={async () => {
+              try {
+                const userRef = doc(db, "users", user.uid);
+                await updateDoc(userRef, {
+                  visitsCount: (user.visitsCount || 0) + 1,
+                });
+                alert(`Рейтинг пользователя повышен!`);
+              } catch (error) {
+                console.error(error);
+                alert("Ошибка при повышении рейтинга");
+              }
+            }}
+          >
+            Повысить рейтинг
+          </AccentButton>
         )}
 
         <Stats>
