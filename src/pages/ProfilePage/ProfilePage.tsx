@@ -210,7 +210,6 @@ export const ProfilePage: React.FC<Props> = ({
             >
               Редактировать
             </SecondaryButton>
-            {/* <button onClick={() => navigate("/request")}>Создать заявку</button> */}
           </>
         )}
 
