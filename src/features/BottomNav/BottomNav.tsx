@@ -4,7 +4,8 @@ import { Link, useLocation } from "react-router-dom";
 
 import leaderboardIcon from "../../assets/icons/BottomNav/leader_icon.svg";
 import profileIcon from "../../assets/icons/BottomNav/profile_icon.svg";
-import adminIcon from "../../assets/icons/BottomNav/admin_icon.svg";
+// import adminIcon from "../../assets/icons/BottomNav/admin_icon.svg";
+import plusIcon from "../../assets/icons/BottomNav/plus_button.svg";
 
 interface Props {
   uid?: string; // uid текущего пользователя
@@ -31,14 +32,33 @@ export const BottomNav = ({ uid }: Props) => {
         </button>
       </Link>
 
-      <Link to="/admin" className={styles.link}>
+      <Link to="/request" className={styles.link}>
+        <button
+          style={{
+            fontSize: "12px",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            alignItems: "center",
+            width: "100%",
+            gap: "4px",
+            color: "#b2b2b2",
+            outline: "none",
+          }}
+        >
+          <img src={plusIcon} alt="Admin" />
+          <span>Посещение</span>
+        </button>
+      </Link>
+
+      {/* <Link to="/admin" className={styles.link}>
         <button
           className={`${styles.bottomTab} ${active === "admin" ? styles.active : ""}`}
         >
           <img src={adminIcon} alt="Admin" />
           <span>Админ</span>
         </button>
-      </Link>
+      </Link> */}
 
       <Link to={profileLink} className={styles.link}>
         <button

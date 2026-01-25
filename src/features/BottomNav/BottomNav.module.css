@@ -41,3 +41,13 @@
 .active {
   opacity: 1;
 }
+
+.centerTab {
+  gap: 16px;
+  opacity: 1 !important;
+  font-size: 12px;
+}
+
+.centerTab img {
+  margin-top: -36px;
+}

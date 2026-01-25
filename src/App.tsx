@@ -21,7 +21,7 @@ import { LeaderboardPage } from "./pages/LeaderboardPage/LeaderboardPage";
 import { BottomNav } from "./features/BottomNav/BottomNav";
 import { ProfilePage } from "./pages/ProfilePage/ProfilePage";
 import WelcomePage from "./pages/WelcomePage";
-import { RequestPage } from "./pages/RequestPage";
+import { RequestPage } from "./pages/RequestPage/RequestPage";
 import { AdminPage } from "./pages/AdminPage";
 
 import type { User, TelegramUser } from "./types";
@@ -169,10 +169,7 @@ const App: React.FC = () => {
           element={<AdminPage currentUser={currentUser} />}
         />
         <Route path="*" element={<Navigate to="/users" />} />
-        <Route
-          path="/request"
-          element={<RequestPage currentUserId={currentUser?.uid} />}
-        />
+        <Route path="/request" element={<RequestPage />} />
       </Routes>
 
       <BottomNav uid={currentUser?.uid} />

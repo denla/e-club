@@ -7,6 +7,8 @@ import { doc, setDoc } from "firebase/firestore";
 import { db } from "../../firebase";
 import { useNavigate } from "react-router-dom";
 
+import { Drawer } from "../../components/Drawer";
+
 import EmptyImg from "../../assets/images/empty.png";
 
 import AchievmentActivel2 from "../../assets/images/achievments/2_active.png";
@@ -132,6 +134,8 @@ export const ProfilePage: React.FC<Props> = ({
   const [editing, setEditing] = useState(false);
   const [tab, setTab] = useState<TabType>("achievements");
 
+  const [drawerOpen, setDrawerOpen] = useState(false);
+
   if (!user) return <Center>Загрузка профиля...</Center>;
 
   const isOwnProfile = currentUser?.uid === user.uid;
@@ -188,16 +192,9 @@ export const ProfilePage: React.FC<Props> = ({
           ) : (
             <>
               {firstName} {lastName}
-              {isOwnProfile && (
-                <button onClick={() => setEditing(true)}>✏️</button>
-              )}
             </>
           )}
         </Name>
-
-        {isOwnProfile && (
-          <button onClick={() => navigate("/request")}>Создать заявку</button>
-        )}
 
         {user.telegram?.username && (
           <UsernameBadge>
@@ -205,20 +202,32 @@ export const ProfilePage: React.FC<Props> = ({
           </UsernameBadge>
         )}
 
+        {isOwnProfile && (
+          <>
+            <SecondaryButton
+              style={{ width: "fit-content" }}
+              onClick={() => setDrawerOpen(true)}
+            >
+              Редактировать
+            </SecondaryButton>
+            {/* <button onClick={() => navigate("/request")}>Создать заявку</button> */}
+          </>
+        )}
+
         <Stats>
           <StatCard>
-            <StatLabel>Опыта за посещения</StatLabel>
+            <StatLabel>Опыт</StatLabel>
             <StatValue>{user.visitsCount * 10} XP</StatValue>
           </StatCard>
 
           <StatCard>
-            <StatLabel>Открыто достижений</StatLabel>
+            <StatLabel>Достижений</StatLabel>
             <StatValue>{unlockedAchievementsCount}</StatValue>
           </StatCard>
 
           {userRank && (
             <StatCard>
-              <StatLabel>Место в рейтинге</StatLabel>
+              <StatLabel>Место в топе</StatLabel>
               <StatValue>{userRank}</StatValue>
             </StatCard>
           )}
@@ -284,6 +293,33 @@ export const ProfilePage: React.FC<Props> = ({
           )}
         </HistoryGrid>
       )}
+
+      <Drawer isOpen={drawerOpen} onClose={() => setDrawerOpen(false)}>
+        <h3 style={{ marginTop: "0" }}>Редактировать профиль</h3>
+        <CustomInput
+          value={firstName}
+          onChange={(e) => setFirstName(e.target.value)}
+          placeholder="Имя"
+        />
+        {/* <input
+          value={firstName}
+          onChange={(e) => setFirstName(e.target.value)}
+          placeholder="Имя"
+          className={styled.customInput}
+        /> */}
+        <CustomInput
+          value={lastName}
+          onChange={(e) => setLastName(e.target.value)}
+          placeholder="Фамилия"
+        />
+        <div style={{ display: "flex", gap: "8px", marginTop: "16px" }}>
+          <AccentButton onClick={saveName}>Сохранить</AccentButton>
+          {/* <button onClick={saveName}>Сохранить</button> */}
+          <SecondaryButton onClick={() => setDrawerOpen(false)}>
+            Отмена
+          </SecondaryButton>
+        </div>
+      </Drawer>
     </Page>
   );
 };
@@ -326,8 +362,8 @@ const Stats = styled.div`
   display: flex;
   justify-content: center;
   gap: 0;
-  flex-direction: column;
-  background: ${({ theme }) => theme.colors.card};
+  flex-direction: row;
+  // background: ${({ theme }) => theme.colors.card};
   border-radius: 12px;
   font-size: 14px;
   overflow: hidden;
@@ -337,21 +373,22 @@ const Stats = styled.div`
 const StatCard = styled.div`
   padding: 16px 20px;
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   width: 100%;
   justify-content: space-between;
-  border-top: 1px solid #292929;
+  border-left: 1px solid #292929;
+  gap: 8px;
 
   &:first-child {
-    border-top: none;
+    border-left: none;
   }
 }
 `;
 
 const StatValue = styled.div`
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 600;
 `;
 
@@ -460,3 +497,77 @@ const UsernameBadge = styled.div`
   color: #777777;
   width: fit-content;
 `;
+
+const CustomInput = styled.input`
+  padding: 12px;
+  background: transparent;
+  border: 1px solid lavender;
+  border-radius: 12px;
+  width: 100%;
+  outline: none;
+  color: white;
+  border: 1px solid #ffffff30;
+
+  &::placeholder {
+    color: #aaa;
+  }
+
+  &:focus {
+    border-color: #ff5a00;
+  }
+`;
+
+const AccentButton = styled.button`
+  background: #ff5a00;
+  border: none;
+  color: #000;
+  font-weight: 700;
+  padding: 12px 20px;
+  border-radius: 12px;
+  margin-bottom: 16px;
+  font-family: "Disket Mono", monospace;
+  transition: 0.2s ease;
+  outline: none;
+
+  font-size: 12px;
+  border-radius: 50px;
+  width: 100%;
+`;
+
+const SecondaryButton = styled.button`
+  background: #ffffff2e;
+  border: none;
+  color: #ffffff;
+  font-weight: 700;
+  padding: 12px 20px;
+  border-radius: 12px;
+  margin-bottom: 16px;
+  font-family: "Disket Mono", monospace;
+  transition: 0.2s ease;
+  outline: none;
+
+  font-size: 11px;
+  border-radius: 50px;
+  width: 100%;
+
+  &.fit-content {
+    width: fit-content;
+  }
+`;
+
+// .button {
+//   background: #ff5a00;
+//   border: none;
+//   color: #000;
+//   font-weight: 700;
+//   padding: 16px;
+//   border-radius: 12px;
+//   margin-bottom: 16px;
+//   font-family: "Disket Mono", monospace;
+//   transition: 0.2s ease;
+//   outline: none;
+// }
+
+// .button:hover {
+//   background: #ff742e;
+// }
