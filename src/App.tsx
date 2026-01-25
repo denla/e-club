@@ -188,5 +188,5 @@ const UserProfilePage: React.FC<{
 }> = ({ users, currentUser }) => {
   const { uid } = useParams();
   const user = users.find((u) => u.uid === uid);
-  return <ProfilePage user={user} currentUser={currentUser} />;
+  return <ProfilePage user={user} currentUser={currentUser} allUsers={users} />;
 };

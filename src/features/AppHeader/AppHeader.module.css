@@ -1,0 +1,14 @@
+.header {
+  width: 100%;
+  height: 60px; /* стандартная высота шапки */
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  z-index: 100;
+  justify-content: center;
+}
+
+.logo {
+  height: 24px; /* подгоняем размер логотипа */
+  object-fit: contain;
+}

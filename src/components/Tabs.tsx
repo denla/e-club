@@ -8,13 +8,21 @@ const Wrapper = styled.div`
   margin: 24px 0;
 `;
 
+// const Tab = styled.button<{ active: boolean }>`
+//   flex: 1;
+//   padding: 10px 0;
+//   border-radius: 20px;
+//   background: ${({ active }) => (active ? "#fff" : "transparent")};
+//   color: ${({ active }) => (active ? "#000" : "#fff")};
+//   font-weight: 500;
+
 const Tab = styled.button<{ active: boolean }>`
-  flex: 1;
-  padding: 10px 0;
-  border-radius: 20px;
+  padding: 12px 20px;
+  border-radius: 50px;
   background: ${({ active }) => (active ? "#fff" : "transparent")};
   color: ${({ active }) => (active ? "#000" : "#fff")};
-  font-weight: 500;
+  outline: none;
+  font-size: 14px !important;
 `;
 
 interface Props {

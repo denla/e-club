@@ -3,17 +3,21 @@
   align-items: center;
   justify-content: space-between;
   padding: 12px 16px;
+  gap: 12px;
+  color: white;
+  transition: 0.2s ease;
 }
 
 .left {
   display: flex;
   align-items: center;
   gap: 12px;
+  flex: 1;
 }
 
 .avatar {
-  width: 36px;
-  height: 36px;
+  width: 52px;
+  height: 52px;
   border-radius: 50%;
   background: #7a7a7a;
   display: flex;
@@ -25,6 +29,8 @@
 .info {
   display: flex;
   flex-direction: column;
+  gap: 4px;
+  flex: 1;
 }
 
 .name {
@@ -48,9 +54,33 @@
   display: block;
 }
 
+.item:hover {
+  background: #1f1f1f9c;
+}
+
+.item:active {
+  background: #1f1f1f;
+}
+
 .avatarImage {
-  width: 36px;
-  height: 36px;
+  width: 52px;
+  height: 52px;
   border-radius: 50%;
   object-fit: cover;
+}
+
+.xpBadge {
+  background: #1f1f1f;
+  color: #7a7a7a;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  letter-spacing: 1px;
+  font-weight: 600;
+}
+
+.count {
+  color: #7a7a7a;
+  font-size: 12px;
+  font-family: "Disket Mono", monospace;
 }

@@ -26,6 +26,7 @@ export const LeaderboardItem: React.FC<Props> = ({ user }) => {
   return (
     <Link to={`/users/${user.uid}`} className={styles.link}>
       <div className={styles.item}>
+        <div className={styles.count}>{user.rank}</div>
         <div className={styles.left}>
           {/* Аватар */}
           {avatarUrl ? (
@@ -43,12 +44,12 @@ export const LeaderboardItem: React.FC<Props> = ({ user }) => {
             <div className={styles.name}>
               {user.firstName} {user.lastName}
             </div>
-            <div className={styles.sub}>{user.visitsCount} посещений</div>
+            <div className={styles.sub}>{user.telegram?.username}</div>
           </div>
         </div>
 
         {/* Ранг */}
-        <div className={styles.rank}>#{user.rank}</div>
+        <div className={styles.xpBadge}>{user.visitsCount * 10} XP</div>
       </div>
     </Link>
   );

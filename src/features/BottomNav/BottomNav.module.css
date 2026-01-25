@@ -16,7 +16,7 @@
   color: inherit;
 }
 
-button {
+.bottomTab {
   width: 100%; /* кнопка теперь растягивается на всю ширину ссылки */
   height: 100%;
   background: none;
@@ -34,7 +34,7 @@ button {
   user-select: none;
 }
 
-button:active {
+.bottomTab:active {
   transform: scale(0.95);
 }
 
