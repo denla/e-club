@@ -27,6 +27,8 @@ import { AdminPage } from "./pages/AdminPage";
 import type { User, TelegramUser } from "./types";
 import Preloader from "./features/Preloader/Preloader";
 
+import { useTelegramInsets } from "./hooks/useTelegramInsets";
+
 // --- моковые данные для теста вне Telegram WebApp
 const MOCK_TG_USER: TelegramUser = {
   id: 999999,
@@ -45,6 +47,8 @@ const App: React.FC = () => {
   const [needsRegistration, setNeedsRegistration] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
   const [tgReady, setTgReady] = useState(false);
+
+  useTelegramInsets();
 
   useEffect(() => {
     // --- подписка на всех пользователей Firestore

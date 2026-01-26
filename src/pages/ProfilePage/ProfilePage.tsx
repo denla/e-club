@@ -10,11 +10,20 @@ import { Drawer } from "../../components/Drawer";
 
 import EmptyImg from "../../assets/images/empty.png";
 
-import AchievmentActivel2 from "../../assets/images/achievments/2_active.png";
-import AchievmentInactive2 from "../../assets/images/achievments/2_inactive.png";
+import AchievmentActive1 from "../../assets/images/achievments/1_active.png";
+import AchievmentActive2 from "../../assets/images/achievments/2_active.png";
+import AchievmentActive3 from "../../assets/images/achievments/3_active.png";
+import AchievmentActive4 from "../../assets/images/achievments/4_active.png";
+import AchievmentActive5 from "../../assets/images/achievments/5_active.png";
+import AchievmentActive6 from "../../assets/images/achievments/6_active.png";
+import AchievmentActive7 from "../../assets/images/achievments/7_active.png";
+import AchievmentActive8 from "../../assets/images/achievments/8_active.png";
+import AchievmentActive9 from "../../assets/images/achievments/9_active.png";
+import AchievmentActive10 from "../../assets/images/achievments/10_active.png";
 
-import AchievmentActivel5 from "../../assets/images/achievments/5_active.png";
-import AchievmentInactive5 from "../../assets/images/achievments/5_inactive.png";
+import AchievmentInactive1 from "../../assets/images/achievments/1_disabled.png";
+import AchievmentInactive2 from "../../assets/images/achievments/2_disabled.png";
+import AchievmentInactive3 from "../../assets/images/achievments/3_disabled.png";
 
 /* =========================
    HELPERS
@@ -38,71 +47,71 @@ const ACHIEVEMENTS = [
     id: "lvl_2",
     title: "Первый заряд",
     level: 2,
-    activeIcon: AchievmentActivel2,
-    inactiveIcon: AchievmentInactive2,
+    activeIcon: AchievmentActive1,
+    inactiveIcon: AchievmentInactive1,
   },
   {
     id: "lvl_5",
     title: "В ритме Электрона",
     level: 5,
-    activeIcon: AchievmentActivel5,
-    inactiveIcon: AchievmentInactive5,
+    activeIcon: AchievmentActive2,
+    inactiveIcon: AchievmentInactive1,
   },
   {
     id: "lvl_8",
     title: "Ближе к цели",
     level: 8,
-    activeIcon: AchievmentActivel2,
-    inactiveIcon: AchievmentInactive2,
+    activeIcon: AchievmentActive3,
+    inactiveIcon: AchievmentInactive1,
   },
   {
     id: "lvl_11",
     title: "Тёплая поддержка",
     level: 11,
-    activeIcon: AchievmentActivel5,
-    inactiveIcon: AchievmentInactive5,
+    activeIcon: AchievmentActive4,
+    inactiveIcon: AchievmentInactive1,
   },
   {
     id: "lvl_14",
     title: "Лицо энергии",
     level: 14,
-    activeIcon: AchievmentActivel2,
+    activeIcon: AchievmentActive5,
     inactiveIcon: AchievmentInactive2,
   },
   {
     id: "lvl_17",
     title: "Носитель силы",
     level: 17,
-    activeIcon: AchievmentActivel5,
-    inactiveIcon: AchievmentInactive5,
+    activeIcon: AchievmentActive6,
+    inactiveIcon: AchievmentInactive2,
   },
   {
     id: "lvl_20",
     title: "Лучший болельщик",
     level: 20,
-    activeIcon: AchievmentActivel2,
-    inactiveIcon: AchievmentInactive2,
+    activeIcon: AchievmentActive7,
+    inactiveIcon: AchievmentInactive1,
   },
   {
     id: "lvl_22",
     title: "Лучший друг",
     level: 22,
-    activeIcon: AchievmentActivel5,
-    inactiveIcon: AchievmentInactive5,
+    activeIcon: AchievmentActive8,
+    inactiveIcon: AchievmentInactive1,
   },
   {
     id: "lvl_25",
     title: "На страже команды",
     level: 25,
-    activeIcon: AchievmentActivel2,
-    inactiveIcon: AchievmentInactive2,
+    activeIcon: AchievmentActive9,
+    inactiveIcon: AchievmentInactive3,
   },
   {
     id: "lvl_30",
     title: "Верность клубу",
     level: 30,
-    activeIcon: AchievmentActivel5,
-    inactiveIcon: AchievmentInactive5,
+    activeIcon: AchievmentActive10,
+    inactiveIcon: AchievmentInactive2,
   },
 ];
 

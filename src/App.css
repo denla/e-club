@@ -10,8 +10,8 @@ body {
 
 .app {
   height: 100dvh;
-  padding-top: var(--tg-top);
-  padding-bottom: var(--tg-bottom);
+  padding-top: max(var(--tg-top), env(safe-area-inset-top));
+  padding-bottom: max(var(--tg-bottom), env(safe-area-inset-bottom));
 }
 
 #root {
