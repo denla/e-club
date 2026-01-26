@@ -6,8 +6,6 @@ import { Avatar } from "../../components/Avatar";
 import { doc, setDoc, updateDoc } from "firebase/firestore";
 import { db } from "../../firebase";
 
-// import { useNavigate } from "react-router-dom";
-
 import { Drawer } from "../../components/Drawer";
 
 import EmptyImg from "../../assets/images/empty.png";
@@ -38,75 +36,89 @@ const formatDateTime = (date: Date) =>
 const ACHIEVEMENTS = [
   {
     id: "lvl_2",
-    title: "Новичок",
+    title: "Первый заряд",
     level: 2,
     activeIcon: AchievmentActivel2,
     inactiveIcon: AchievmentInactive2,
   },
   {
     id: "lvl_5",
-    title: "Свой парень",
+    title: "В ритме Электрона",
     level: 5,
     activeIcon: AchievmentActivel5,
     inactiveIcon: AchievmentInactive5,
   },
   {
     id: "lvl_8",
-    title: "Постоянный гость",
+    title: "Ближе к цели",
     level: 8,
     activeIcon: AchievmentActivel2,
     inactiveIcon: AchievmentInactive2,
   },
   {
     id: "lvl_11",
-    title: "Опытный",
+    title: "Тёплая поддержка",
     level: 11,
     activeIcon: AchievmentActivel5,
     inactiveIcon: AchievmentInactive5,
   },
   {
     id: "lvl_14",
-    title: "Ветеран",
+    title: "Лицо энергии",
     level: 14,
     activeIcon: AchievmentActivel2,
     inactiveIcon: AchievmentInactive2,
   },
   {
     id: "lvl_17",
-    title: "Легенда",
+    title: "Носитель силы",
     level: 17,
     activeIcon: AchievmentActivel5,
     inactiveIcon: AchievmentInactive5,
   },
   {
     id: "lvl_20",
-    title: "Машина",
+    title: "Лучший болельщик",
     level: 20,
     activeIcon: AchievmentActivel2,
     inactiveIcon: AchievmentInactive2,
   },
   {
     id: "lvl_22",
-    title: "Икона",
+    title: "Лучший друг",
     level: 22,
     activeIcon: AchievmentActivel5,
     inactiveIcon: AchievmentInactive5,
   },
   {
     id: "lvl_25",
-    title: "Босс",
+    title: "На страже команды",
     level: 25,
     activeIcon: AchievmentActivel2,
     inactiveIcon: AchievmentInactive2,
   },
   {
     id: "lvl_30",
-    title: "Абсолют",
+    title: "Верность клубу",
     level: 30,
     activeIcon: AchievmentActivel5,
     inactiveIcon: AchievmentInactive5,
   },
 ];
+
+// Призы за ачивки
+const ACHIEVEMENT_PRIZES: Record<string, string> = {
+  lvl_2: "5 монет",
+  lvl_5: "10 монет",
+  lvl_8: "Стикер",
+  lvl_11: "Бейдж",
+  lvl_14: "Бонусный опыт",
+  lvl_17: "Секретный предмет",
+  lvl_20: "Эмодзи",
+  lvl_22: "Подарок в профиле",
+  lvl_25: "VIP доступ",
+  lvl_30: "Абсолютный трофей",
+};
 
 /* =========================
    TYPES
@@ -117,7 +129,7 @@ type TabType = "achievements" | "history";
 interface Props {
   user?: User | null;
   currentUser?: User | null;
-  allUsers?: User[]; // <-- список всех пользователей для подсчета рейтинга
+  allUsers?: User[];
 }
 
 /* =========================
@@ -129,13 +141,18 @@ export const ProfilePage: React.FC<Props> = ({
   currentUser,
   allUsers,
 }) => {
-  // const navigate = useNavigate();
   const [firstName, setFirstName] = useState(user?.firstName ?? "");
   const [lastName, setLastName] = useState(user?.lastName ?? "");
   const [editing, setEditing] = useState(false);
   const [tab, setTab] = useState<TabType>("achievements");
 
   const [drawerOpen, setDrawerOpen] = useState(false);
+
+  // Состояние выбранной ачивки
+  const [selectedAchievement, setSelectedAchievement] = useState<{
+    achievement: (typeof ACHIEVEMENTS)[0];
+    date?: Date;
+  } | null>(null);
 
   if (!user) return <Center>Загрузка профиля...</Center>;
 
@@ -167,6 +184,18 @@ export const ProfilePage: React.FC<Props> = ({
         .sort((a, b) => b.visitsCount - a.visitsCount)
         .findIndex((u) => u.uid === user.uid) + 1
     : null;
+
+  // =========================
+  // Открытие Drawer с ачивкой
+  // =========================
+  const openAchievementDrawer = (achievement: (typeof ACHIEVEMENTS)[0]) => {
+    const visit = user.visits?.find((v) => v.level >= achievement.level);
+    setSelectedAchievement({
+      achievement,
+      date: visit?.date?.toDate ? visit.date.toDate() : undefined,
+    });
+    setDrawerOpen(true);
+  };
 
   return (
     <Page>
@@ -204,14 +233,12 @@ export const ProfilePage: React.FC<Props> = ({
         )}
 
         {isOwnProfile && (
-          <>
-            <SecondaryButton
-              style={{ width: "fit-content" }}
-              onClick={() => setDrawerOpen(true)}
-            >
-              Редактировать
-            </SecondaryButton>
-          </>
+          <SecondaryButton
+            style={{ width: "fit-content" }}
+            onClick={() => setDrawerOpen(true)}
+          >
+            Редактировать
+          </SecondaryButton>
         )}
 
         {currentUser?.role === "admin" && currentUser.uid !== user.uid && (
@@ -274,9 +301,13 @@ export const ProfilePage: React.FC<Props> = ({
         <AchievementsGrid>
           {ACHIEVEMENTS.map((a) => {
             const unlocked = user.visitsCount >= a.level;
-
             return (
-              <AchievementCard key={a.id} active={unlocked}>
+              <AchievementCard
+                key={a.id}
+                active={unlocked}
+                onClick={() => openAchievementDrawer(a)}
+                style={{ cursor: "pointer" }}
+              >
                 <AchievementImage
                   src={unlocked ? a.activeIcon : a.inactiveIcon}
                 />
@@ -313,31 +344,42 @@ export const ProfilePage: React.FC<Props> = ({
         </HistoryGrid>
       )}
 
+      {/* ===== DRAWER для выбранной ачивки ===== */}
       <Drawer isOpen={drawerOpen} onClose={() => setDrawerOpen(false)}>
-        <h3 style={{ marginTop: "0" }}>Редактировать профиль</h3>
-        <CustomInput
-          value={firstName}
-          onChange={(e) => setFirstName(e.target.value)}
-          placeholder="Имя"
-        />
-        {/* <input
-          value={firstName}
-          onChange={(e) => setFirstName(e.target.value)}
-          placeholder="Имя"
-          className={styled.customInput}
-        /> */}
-        <CustomInput
-          value={lastName}
-          onChange={(e) => setLastName(e.target.value)}
-          placeholder="Фамилия"
-        />
-        <div style={{ display: "flex", gap: "8px", marginTop: "16px" }}>
-          <AccentButton onClick={saveName}>Сохранить</AccentButton>
-          {/* <button onClick={saveName}>Сохранить</button> */}
-          <SecondaryButton onClick={() => setDrawerOpen(false)}>
-            Отмена
-          </SecondaryButton>
-        </div>
+        {selectedAchievement ? (
+          <>
+            <h3 style={{ marginTop: 0 }}>
+              {selectedAchievement.achievement.title}
+            </h3>
+            <AchievementImage
+              src={
+                user.visitsCount >= selectedAchievement.achievement.level
+                  ? selectedAchievement.achievement.activeIcon
+                  : selectedAchievement.achievement.inactiveIcon
+              }
+              style={{ maxWidth: "200px", margin: "16px auto" }}
+            />
+            <div>
+              <strong>Дата получения: </strong>
+              {selectedAchievement.date
+                ? formatDateTime(selectedAchievement.date)
+                : "Еще не получена"}
+            </div>
+            <div style={{ marginTop: "8px" }}>
+              <strong>Приз: </strong>
+              {user.visitsCount >= selectedAchievement.achievement.level
+                ? ACHIEVEMENT_PRIZES[selectedAchievement.achievement.id]
+                : "Приз будет после получения"}
+            </div>
+            <div style={{ display: "flex", gap: "8px", marginTop: "16px" }}>
+              <SecondaryButton onClick={() => setDrawerOpen(false)}>
+                Закрыть
+              </SecondaryButton>
+            </div>
+          </>
+        ) : (
+          <div>Нет данных</div>
+        )}
       </Drawer>
     </Page>
   );
@@ -412,7 +454,7 @@ const StatValue = styled.div`
 `;
 
 const StatLabel = styled.div`
-  font-size: 12px;
+  font-size: 14px;
   color: ${({ theme }) => theme.colors.muted};
 `;
 
@@ -459,11 +501,11 @@ const AchievementImage = styled.img`
 `;
 
 const AchievementText = styled.div`
-  font-size: 14px;
+  font-size: 16px;
 
   span {
     display: block;
-    font-size: 10px;
+    font-size: 12px;
     color: ${({ theme }) => theme.colors.muted};
   }
 `;

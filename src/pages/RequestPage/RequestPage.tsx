@@ -34,7 +34,7 @@ export const RequestPage: React.FC = () => {
 
 const Page = styled.div`
   height: 100vh;
-  padding: 24px;
+  padding: 48px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -63,7 +63,8 @@ const Title = styled.h1`
 const Description = styled.p`
   font-size: 16px;
   margin-bottom: 32px;
-  max-width: 400px;
+  font-size: 14px;
+  color: #9b9b9b;
 `;
 
 const Button = styled.button`

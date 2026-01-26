@@ -7,6 +7,7 @@
   background: #000;
   display: flex;
   border-top: 1px solid #1e1e1e;
+  bottom: var(--tg-bottom);
 }
 
 .link {

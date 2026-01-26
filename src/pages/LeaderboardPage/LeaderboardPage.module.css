@@ -44,7 +44,8 @@
 .list {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 0px;
+  padding: 0 16px;
 }
 
 /* SEARCH FIELD */
@@ -92,6 +93,10 @@
   padding: 10px 0;
   background: transparent;
   color: white;
+  font-family:
+    Lab Grotesque,
+    system-ui,
+    sans-serif;
 }
 
 /* Кнопка очистки */
@@ -135,9 +140,8 @@
 .cardHeader {
   font-size: 12px;
   font-weight: 600;
-  margin: 16px 0 8px;
+  margin: 16px;
   font-family: "Disket Mono", monospace;
   opacity: 0.6;
-  margin: 16px;
-  margin-bottom: 0;
+  margin-bottom: 12px !important;
 }

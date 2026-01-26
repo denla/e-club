@@ -1,3 +1,19 @@
+:root {
+  --tg-top: 0px;
+  --tg-bottom: 0px;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+.app {
+  height: 100dvh;
+  padding-top: var(--tg-top);
+  padding-bottom: var(--tg-bottom);
+}
+
 #root {
   max-width: 1280px;
   margin: 0 auto;

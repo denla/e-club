@@ -10,7 +10,7 @@ export const GlobalStyles = createGlobalStyle`
     margin: 0;
     background: #000;
     color: #fff;
-    font-family: Inter, system-ui, sans-serif;
+    font-family: Lab Grotesque, system-ui, sans-serif;
   }
 
   button {
@@ -19,4 +19,5 @@ export const GlobalStyles = createGlobalStyle`
     color: inherit;
     cursor: pointer;
   }
+    
 `;
