@@ -151,7 +151,7 @@ export const ProfilePage: React.FC<Props> = ({
 }) => {
   const [firstName, setFirstName] = useState(user?.firstName ?? "");
   const [lastName, setLastName] = useState(user?.lastName ?? "");
-  const [editing, setEditing] = useState(false);
+  // const [editing, setEditing] = useState(false);
   const [tab, setTab] = useState<TabType>("achievements");
 
   const [drawerType, setDrawerType] = useState<
