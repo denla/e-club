@@ -3,11 +3,11 @@
   bottom: 0;
   left: 0;
   right: 0;
-  height: 68px;
+  /* height: 68px; */
   background: #000;
   display: flex;
   border-top: 1px solid #1e1e1e;
-  bottom: var(--tg-bottom);
+  padding-bottom: var(--tg-bottom);
 }
 
 .link {

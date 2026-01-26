@@ -4,6 +4,7 @@
   color: #fff;
   padding-bottom: 80px;
   width: 100vw;
+  padding-top: var(--tg-top);
 }
 /* Анимация шапки */
 .top {
