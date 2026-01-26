@@ -409,7 +409,7 @@ const Page = styled.div`
   min-height: 100vh;
   cursor: default;
   user-select: none;
-  padding-top: var(--tg-top);
+  padding-top: calc(var(--tg-top) + 50px);
 `;
 
 const Center = styled.div`

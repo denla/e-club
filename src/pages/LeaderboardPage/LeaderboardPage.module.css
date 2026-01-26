@@ -4,7 +4,8 @@
   color: #fff;
   padding-bottom: 80px;
   width: 100vw;
-  padding-top: var(--tg-top);
+  /* padding-top: var(--tg-top); */
+  padding-top: calc(var(--tg-top) + 50px);
 }
 /* Анимация шапки */
 .top {
