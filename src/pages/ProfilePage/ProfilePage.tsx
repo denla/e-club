@@ -409,7 +409,6 @@ const Page = styled.div`
   min-height: 100vh;
   cursor: default;
   user-select: none;
-  padding-top: calc(var(--tg-top) + 50px);
 `;
 
 const Center = styled.div`
@@ -560,6 +559,10 @@ const CustomInput = styled.input`
   outline: none;
   color: white;
   border: 1px solid #ffffff30;
+  font-size: 16px;
+  font-family:
+    Lab Grotesque,
+    sans-serif;
 
   &::placeholder {
     color: #aaa;
