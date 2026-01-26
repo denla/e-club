@@ -332,7 +332,7 @@ export const ProfilePage: React.FC<Props> = ({
       <Drawer isOpen={!!drawerType} onClose={() => setDrawerType(null)}>
         {drawerType === "achievement" && selectedAchievement ? (
           <>
-            <h3 style={{ marginTop: 0 }}>
+            <h3 style={{ marginTop: 0, textAlign: "center" }}>
               {selectedAchievement.achievement.title}
             </h3>
             <AchievementImage
