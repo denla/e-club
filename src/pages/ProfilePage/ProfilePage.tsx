@@ -258,7 +258,7 @@ export const ProfilePage: React.FC<Props> = ({
 
           {userRank && (
             <StatCard>
-              <StatLabel>Место в топе</StatLabel>
+              <StatLabel>Место</StatLabel>
               <StatValue>{userRank}</StatValue>
             </StatCard>
           )}
