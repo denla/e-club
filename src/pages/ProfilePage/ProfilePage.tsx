@@ -115,7 +115,6 @@ const ACHIEVEMENTS = [
   },
 ];
 
-// Призы за ачивки
 const ACHIEVEMENT_PRIZES: Record<string, string> = {
   lvl_2: "5 монет",
   lvl_5: "10 монет",
@@ -155,9 +154,9 @@ export const ProfilePage: React.FC<Props> = ({
   const [editing, setEditing] = useState(false);
   const [tab, setTab] = useState<TabType>("achievements");
 
-  const [drawerOpen, setDrawerOpen] = useState(false);
-
-  // Состояние выбранной ачивки
+  const [drawerType, setDrawerType] = useState<
+    "editProfile" | "achievement" | null
+  >(null);
   const [selectedAchievement, setSelectedAchievement] = useState<{
     achievement: (typeof ACHIEVEMENTS)[0];
     date?: Date;
@@ -174,16 +173,13 @@ export const ProfilePage: React.FC<Props> = ({
         firstName,
         lastName,
       });
-      setEditing(false);
+      setDrawerType(null);
       alert("Имя сохранено");
     } catch {
       alert("Ошибка сохранения");
     }
   };
 
-  // =========================
-  // Статистика
-  // =========================
   const unlockedAchievementsCount = ACHIEVEMENTS.filter(
     (a) => user.visitsCount >= a.level,
   ).length;
@@ -194,17 +190,16 @@ export const ProfilePage: React.FC<Props> = ({
         .findIndex((u) => u.uid === user.uid) + 1
     : null;
 
-  // =========================
-  // Открытие Drawer с ачивкой
-  // =========================
   const openAchievementDrawer = (achievement: (typeof ACHIEVEMENTS)[0]) => {
     const visit = user.visits?.find((v) => v.level >= achievement.level);
     setSelectedAchievement({
       achievement,
       date: visit?.date?.toDate ? visit.date.toDate() : undefined,
     });
-    setDrawerOpen(true);
+    setDrawerType("achievement");
   };
+
+  const openEditProfileDrawer = () => setDrawerType("editProfile");
 
   return (
     <Page>
@@ -213,26 +208,7 @@ export const ProfilePage: React.FC<Props> = ({
         <Avatar user={user} size={90} />
 
         <Name>
-          {editing ? (
-            <>
-              <input
-                value={firstName}
-                onChange={(e) => setFirstName(e.target.value)}
-                placeholder="Имя"
-              />
-              <input
-                value={lastName}
-                onChange={(e) => setLastName(e.target.value)}
-                placeholder="Фамилия"
-              />
-              <button onClick={saveName}>Сохранить</button>
-              <button onClick={() => setEditing(false)}>Отмена</button>
-            </>
-          ) : (
-            <>
-              {firstName} {lastName}
-            </>
-          )}
+          {firstName} {lastName}
         </Name>
 
         {user.telegram?.username && (
@@ -244,7 +220,7 @@ export const ProfilePage: React.FC<Props> = ({
         {isOwnProfile && (
           <SecondaryButton
             style={{ width: "fit-content" }}
-            onClick={() => setDrawerOpen(true)}
+            onClick={openEditProfileDrawer}
           >
             Редактировать
           </SecondaryButton>
@@ -258,7 +234,7 @@ export const ProfilePage: React.FC<Props> = ({
                 await updateDoc(userRef, {
                   visitsCount: (user.visitsCount || 0) + 1,
                 });
-                alert(`Рейтинг пользователя повышен!`);
+                alert("Рейтинг пользователя повышен!");
               } catch (error) {
                 console.error(error);
                 alert("Ошибка при повышении рейтинга");
@@ -315,7 +291,6 @@ export const ProfilePage: React.FC<Props> = ({
                 key={a.id}
                 active={unlocked}
                 onClick={() => openAchievementDrawer(a)}
-                style={{ cursor: "pointer" }}
               >
                 <AchievementImage
                   src={unlocked ? a.activeIcon : a.inactiveIcon}
@@ -353,9 +328,9 @@ export const ProfilePage: React.FC<Props> = ({
         </HistoryGrid>
       )}
 
-      {/* ===== DRAWER для выбранной ачивки ===== */}
-      <Drawer isOpen={drawerOpen} onClose={() => setDrawerOpen(false)}>
-        {selectedAchievement ? (
+      {/* ===== UNIVERSAL DRAWER ===== */}
+      <Drawer isOpen={!!drawerType} onClose={() => setDrawerType(null)}>
+        {drawerType === "achievement" && selectedAchievement ? (
           <>
             <h3 style={{ marginTop: 0 }}>
               {selectedAchievement.achievement.title}
@@ -381,8 +356,28 @@ export const ProfilePage: React.FC<Props> = ({
                 : "Приз будет после получения"}
             </div>
             <div style={{ display: "flex", gap: "8px", marginTop: "16px" }}>
-              <SecondaryButton onClick={() => setDrawerOpen(false)}>
+              <SecondaryButton onClick={() => setDrawerType(null)}>
                 Закрыть
+              </SecondaryButton>
+            </div>
+          </>
+        ) : drawerType === "editProfile" ? (
+          <>
+            <h3 style={{ marginTop: 0 }}>Редактировать профиль</h3>
+            <CustomInput
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
+              placeholder="Имя"
+            />
+            <CustomInput
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
+              placeholder="Фамилия"
+            />
+            <div style={{ display: "flex", gap: "8px", marginTop: "16px" }}>
+              <AccentButton onClick={saveName}>Сохранить</AccentButton>
+              <SecondaryButton onClick={() => setDrawerType(null)}>
+                Отмена
               </SecondaryButton>
             </div>
           </>
@@ -397,16 +392,13 @@ export const ProfilePage: React.FC<Props> = ({
 /* =========================
    STYLES
 ========================= */
+
 const ProfileHeader = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
   margin-bottom: 24px;
   gap: 16px;
-
-  h2 {
-    margin: 0;
-  }
 `;
 
 const Page = styled.div`
@@ -433,7 +425,6 @@ const Stats = styled.div`
   justify-content: center;
   gap: 0;
   flex-direction: row;
-  // background: ${({ theme }) => theme.colors.card};
   border-radius: 12px;
   font-size: 14px;
   overflow: hidden;
@@ -445,16 +436,14 @@ const StatCard = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  width: 100%;
   justify-content: space-between;
+  width: 100%;
   border-left: 1px solid #292929;
   gap: 8px;
 
   &:first-child {
     border-left: none;
   }
-}
 `;
 
 const StatValue = styled.div`
@@ -466,8 +455,6 @@ const StatLabel = styled.div`
   font-size: 14px;
   color: ${({ theme }) => theme.colors.muted};
 `;
-
-/* ===== Tabs ===== */
 
 const HorizontalTabs = styled.div`
   display: flex;
@@ -484,8 +471,6 @@ const HorizontalTabButton = styled.button<{ active: boolean }>`
   color: ${({ active }) => (active ? "#000" : "#fff")};
   font-size: 14px;
 `;
-
-/* ===== Achievements ===== */
 
 const AchievementsGrid = styled.div`
   display: grid;
@@ -518,8 +503,6 @@ const AchievementText = styled.div`
     color: ${({ theme }) => theme.colors.muted};
   }
 `;
-
-/* ===== History ===== */
 
 const HistoryGrid = styled.div`
   display: flex;
@@ -571,7 +554,6 @@ const UsernameBadge = styled.div`
 const CustomInput = styled.input`
   padding: 12px;
   background: transparent;
-  border: 1px solid lavender;
   border-radius: 12px;
   width: 100%;
   outline: none;
@@ -593,14 +575,10 @@ const AccentButton = styled.button`
   color: #000;
   font-weight: 700;
   padding: 12px 20px;
-  border-radius: 12px;
+  border-radius: 50px;
   margin-bottom: 16px;
   font-family: "Disket Mono", monospace;
-  transition: 0.2s ease;
-  outline: none;
-
   font-size: 12px;
-  border-radius: 50px;
   width: 100%;
 `;
 
@@ -610,34 +588,9 @@ const SecondaryButton = styled.button`
   color: #ffffff;
   font-weight: 700;
   padding: 12px 20px;
-  border-radius: 12px;
+  border-radius: 50px;
   margin-bottom: 16px;
   font-family: "Disket Mono", monospace;
-  transition: 0.2s ease;
-  outline: none;
-
   font-size: 11px;
-  border-radius: 50px;
   width: 100%;
-
-  &.fit-content {
-    width: fit-content;
-  }
 `;
-
-// .button {
-//   background: #ff5a00;
-//   border: none;
-//   color: #000;
-//   font-weight: 700;
-//   padding: 16px;
-//   border-radius: 12px;
-//   margin-bottom: 16px;
-//   font-family: "Disket Mono", monospace;
-//   transition: 0.2s ease;
-//   outline: none;
-// }
-
-// .button:hover {
-//   background: #ff742e;
-// }
