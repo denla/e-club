@@ -24,6 +24,13 @@ import AchievmentActive10 from "../../assets/images/achievments/10_active.png";
 import AchievmentInactive1 from "../../assets/images/achievments/1_disabled.png";
 import AchievmentInactive2 from "../../assets/images/achievments/2_disabled.png";
 import AchievmentInactive3 from "../../assets/images/achievments/3_disabled.png";
+import AchievmentInactive4 from "../../assets/images/achievments/4_disabled.png";
+import AchievmentInactive5 from "../../assets/images/achievments/5_disabled.png";
+import AchievmentInactive6 from "../../assets/images/achievments/6_disabled.png";
+import AchievmentInactive7 from "../../assets/images/achievments/7_disabled.png";
+import AchievmentInactive8 from "../../assets/images/achievments/8_disabled.png";
+import AchievmentInactive9 from "../../assets/images/achievments/9_disabled.png";
+import AchievmentInactive10 from "../../assets/images/achievments/10_disabled.png";
 
 /* =========================
    HELPERS
@@ -55,63 +62,63 @@ const ACHIEVEMENTS = [
     title: "В ритме Электрона",
     level: 5,
     activeIcon: AchievmentActive2,
-    inactiveIcon: AchievmentInactive1,
+    inactiveIcon: AchievmentInactive2,
   },
   {
     id: "lvl_8",
     title: "Ближе к цели",
     level: 8,
     activeIcon: AchievmentActive3,
-    inactiveIcon: AchievmentInactive1,
+    inactiveIcon: AchievmentInactive3,
   },
   {
     id: "lvl_11",
     title: "Тёплая поддержка",
     level: 11,
     activeIcon: AchievmentActive4,
-    inactiveIcon: AchievmentInactive1,
+    inactiveIcon: AchievmentInactive4,
   },
   {
     id: "lvl_14",
     title: "Лицо энергии",
     level: 14,
     activeIcon: AchievmentActive5,
-    inactiveIcon: AchievmentInactive2,
+    inactiveIcon: AchievmentInactive5,
   },
   {
     id: "lvl_17",
     title: "Носитель силы",
     level: 17,
     activeIcon: AchievmentActive6,
-    inactiveIcon: AchievmentInactive2,
+    inactiveIcon: AchievmentInactive6,
   },
   {
     id: "lvl_20",
     title: "Лучший болельщик",
     level: 20,
     activeIcon: AchievmentActive7,
-    inactiveIcon: AchievmentInactive1,
+    inactiveIcon: AchievmentInactive7,
   },
   {
     id: "lvl_22",
     title: "Лучший друг",
     level: 22,
     activeIcon: AchievmentActive8,
-    inactiveIcon: AchievmentInactive1,
+    inactiveIcon: AchievmentInactive8,
   },
   {
     id: "lvl_25",
     title: "На страже команды",
     level: 25,
     activeIcon: AchievmentActive9,
-    inactiveIcon: AchievmentInactive3,
+    inactiveIcon: AchievmentInactive9,
   },
   {
     id: "lvl_30",
     title: "Верность клубу",
     level: 30,
     activeIcon: AchievmentActive10,
-    inactiveIcon: AchievmentInactive2,
+    inactiveIcon: AchievmentInactive10,
   },
 ];
 
