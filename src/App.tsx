@@ -15,6 +15,8 @@ import {
 } from "firebase/firestore";
 import { db } from "./firebase";
 
+import { ScrollToTop } from "./components/ScrollToTop";
+
 // import Navbar from "./components/Navbar";
 
 import { LeaderboardPage } from "./pages/LeaderboardPage/LeaderboardPage";
@@ -23,6 +25,7 @@ import { ProfilePage } from "./pages/ProfilePage/ProfilePage";
 import WelcomePage from "./pages/WelcomePage";
 import { RequestPage } from "./pages/RequestPage/RequestPage";
 import { AdminPage } from "./pages/AdminPage";
+import { RewardsPage } from "./pages/RewardsPage/RewardsPage";
 
 import type { User, TelegramUser } from "./types";
 import Preloader from "./features/Preloader/Preloader";
@@ -39,7 +42,7 @@ const MOCK_TG_USER: TelegramUser = {
   photo_url: "https://via.placeholder.com/100",
 };
 
-const USE_MOCK = false; // true для теста вне Telegram WebApp
+const USE_MOCK = true; // true для теста вне Telegram WebApp
 
 const App: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
@@ -159,6 +162,7 @@ const App: React.FC = () => {
 
   return (
     <Router>
+      <ScrollToTop />
       {/* <Navbar currentUser={currentUser} /> */}
 
       <Routes>
@@ -174,6 +178,7 @@ const App: React.FC = () => {
         />
         <Route path="*" element={<Navigate to="/users" />} />
         <Route path="/request" element={<RequestPage />} />
+        <Route path="/rewards" element={<RewardsPage />} />
       </Routes>
 
       <BottomNav uid={currentUser?.uid} />

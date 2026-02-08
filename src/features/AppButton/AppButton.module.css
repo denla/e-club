@@ -1,0 +1,43 @@
+.button {
+  border: none;
+  border-radius: 60px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s ease;
+  font-size: 14px;
+}
+
+/* sizes */
+.default {
+  padding: 16px 24px;
+}
+
+.wide {
+  padding: 16px 24px;
+  width: 100%;
+}
+
+/* variants */
+.orange {
+  background: #ff5a00;
+  color: #000;
+}
+
+.orange:hover {
+  background: #ff742e;
+}
+
+.white {
+  background: #fff;
+  color: #000;
+}
+
+.grey {
+  background: #151515;
+  color: #9f9f9f;
+}
+
+.button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

@@ -1,14 +1,12 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import type { User } from "../../types";
-
-import { Avatar } from "../../components/Avatar";
 import { doc, setDoc, updateDoc } from "firebase/firestore";
 import { db } from "../../firebase";
+import { CLUB_REWARDS } from "../RewardsPage/rewards.data";
+import { useNavigate } from "react-router-dom";
 
 import { Drawer } from "../../components/Drawer";
-
-import EmptyImg from "../../assets/images/empty.png";
 
 import AchievmentActive1 from "../../assets/images/achievments/1_active.png";
 import AchievmentActive2 from "../../assets/images/achievments/2_active.png";
@@ -32,18 +30,36 @@ import AchievmentInactive8 from "../../assets/images/achievments/8_disabled.png"
 import AchievmentInactive9 from "../../assets/images/achievments/9_disabled.png";
 import AchievmentInactive10 from "../../assets/images/achievments/10_disabled.png";
 
+import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
+import { AppButton } from "../../features/AppButton/AppButton";
+import AppHeader from "../../features/AppHeader/AppHeader";
+
+import arrow_right from "../../assets/icons/arrow_right.svg";
+
 /* =========================
    HELPERS
 ========================= */
 
-const formatDateTime = (date: Date) =>
-  date.toLocaleDateString("ru-RU", {
-    day: "2-digit",
+const formatDateTime = (date: Date) => {
+  const formatter = new Intl.DateTimeFormat("ru-RU", {
+    day: "numeric",
     month: "long",
     year: "numeric",
     hour: "2-digit",
     minute: "2-digit",
   });
+
+  const parts = formatter.formatToParts(date);
+
+  const day = parts.find((p) => p.type === "day")?.value;
+  const month = parts.find((p) => p.type === "month")?.value;
+  const year = parts.find((p) => p.type === "year")?.value;
+  const hour = parts.find((p) => p.type === "hour")?.value;
+  const minute = parts.find((p) => p.type === "minute")?.value;
+
+  return `${day} ${month} ${year}, ${hour}:${minute}`;
+};
 
 /* =========================
    ACHIEVEMENTS
@@ -121,20 +137,6 @@ const ACHIEVEMENTS = [
     inactiveIcon: AchievmentInactive10,
   },
 ];
-
-const ACHIEVEMENT_PRIZES: Record<string, string> = {
-  lvl_2: "5 монет",
-  lvl_5: "10 монет",
-  lvl_8: "Стикер",
-  lvl_11: "Бейдж",
-  lvl_14: "Бонусный опыт",
-  lvl_17: "Секретный предмет",
-  lvl_20: "Эмодзи",
-  lvl_22: "Подарок в профиле",
-  lvl_25: "VIP доступ",
-  lvl_30: "Абсолютный трофей",
-};
-
 /* =========================
    TYPES
 ========================= */
@@ -160,6 +162,9 @@ export const ProfilePage: React.FC<Props> = ({
   const [lastName, setLastName] = useState(user?.lastName ?? "");
   // const [editing, setEditing] = useState(false);
   const [tab, setTab] = useState<TabType>("achievements");
+  const [avatarLoaded, setAvatarLoaded] = useState(false);
+
+  const navigate = useNavigate();
 
   const [drawerType, setDrawerType] = useState<
     "editProfile" | "achievement" | null
@@ -181,9 +186,9 @@ export const ProfilePage: React.FC<Props> = ({
         lastName,
       });
       setDrawerType(null);
-      alert("Имя сохранено");
+      // alert("Имя сохранено");
     } catch {
-      alert("Ошибка сохранения");
+      console.error("Ошибка при сохранении имени");
     }
   };
 
@@ -207,30 +212,48 @@ export const ProfilePage: React.FC<Props> = ({
   };
 
   const openEditProfileDrawer = () => setDrawerType("editProfile");
+  const avatarUrl = user.telegram?.photo_url;
 
   return (
     <Page>
       {/* ===== HEADER ===== */}
+      <AppHeader align="left" />
       <ProfileHeader>
-        <Avatar user={user} size={90} />
-
+        <AvatarImage
+          src={avatarUrl}
+          alt={`${user.firstName} ${user.lastName}`}
+          style={{
+            display: avatarLoaded ? "block" : "none",
+            transition: "opacity 0.3s ease",
+          }}
+          onLoad={() => setAvatarLoaded(true)}
+        />
+        {/* <Avatar user={user} size={90} /> */}
+        <SkeletonTheme baseColor="#292929" highlightColor="#3a3a3a">
+          {!avatarLoaded && <Skeleton circle width={90} height={90} />}
+        </SkeletonTheme>
         <Name>
-          {firstName} {lastName}
+          {firstName}
+          <br />
+          {lastName}
         </Name>
-
         {user.telegram?.username && (
           <UsernameBadge>
-            {user.telegram?.username} {user.role === "admin" && "(админ)"}
+            {user.telegram?.username}
+            {/* {user.role === "admin" && "(админ)"} */}
           </UsernameBadge>
         )}
-
         {isOwnProfile && (
-          <SecondaryButton
-            style={{ width: "fit-content" }}
-            onClick={openEditProfileDrawer}
-          >
+          <AppButton variant="grey" onClick={openEditProfileDrawer}>
             Редактировать
-          </SecondaryButton>
+          </AppButton>
+
+          // <SecondaryButton
+          //   style={{ width: "fit-content" }}
+          //   onClick={openEditProfileDrawer}
+          // >
+          //   Редактировать
+          // </SecondaryButton>
         )}
 
         {currentUser?.role === "admin" && currentUser.uid !== user.uid && (
@@ -251,22 +274,22 @@ export const ProfilePage: React.FC<Props> = ({
             Повысить рейтинг
           </AccentButton>
         )}
-
+        <Separator />
         <Stats>
           <StatCard>
-            <StatLabel>Опыт</StatLabel>
             <StatValue>{user.visitsCount * 10} XP</StatValue>
+            <StatLabel>Опыт за посещения</StatLabel>
           </StatCard>
 
           <StatCard>
-            <StatLabel>Достижений</StatLabel>
             <StatValue>{unlockedAchievementsCount}</StatValue>
+            <StatLabel>Ачивок заработано</StatLabel>
           </StatCard>
 
           {userRank && (
             <StatCard>
-              <StatLabel>Место</StatLabel>
               <StatValue>{userRank}</StatValue>
+              <StatLabel>Место в рейтинге</StatLabel>
             </StatCard>
           )}
         </Stats>
@@ -327,10 +350,7 @@ export const ProfilePage: React.FC<Props> = ({
               </HistoryCard>
             ))
           ) : (
-            <Muted>
-              <MutedImage src={EmptyImg} />
-              Нет подтверждённых матчей
-            </Muted>
+            <Muted>Нет подтверждённых матчей</Muted>
           )}
         </HistoryGrid>
       )}
@@ -342,30 +362,62 @@ export const ProfilePage: React.FC<Props> = ({
             <h3 style={{ marginTop: 0, textAlign: "center" }}>
               {selectedAchievement.achievement.title}
             </h3>
-            <AchievementImage
+            <DrawerAchievementCard>
+              <DrawerAchievementImage
+                src={
+                  user.visitsCount >= selectedAchievement.achievement.level
+                    ? selectedAchievement.achievement.activeIcon
+                    : selectedAchievement.achievement.inactiveIcon
+                }
+                alt={selectedAchievement.achievement.title}
+              />
+            </DrawerAchievementCard>
+
+            {/* <AchievementImage
               src={
                 user.visitsCount >= selectedAchievement.achievement.level
                   ? selectedAchievement.achievement.activeIcon
                   : selectedAchievement.achievement.inactiveIcon
               }
               style={{ maxWidth: "200px", margin: "16px auto" }}
-            />
-            <div>
-              <strong>Дата получения: </strong>
-              {selectedAchievement.date
-                ? formatDateTime(selectedAchievement.date)
-                : "Еще не получена"}
-            </div>
-            <div style={{ marginTop: "8px" }}>
-              <strong>Приз: </strong>
-              {user.visitsCount >= selectedAchievement.achievement.level
-                ? ACHIEVEMENT_PRIZES[selectedAchievement.achievement.id]
-                : "Приз будет после получения"}
-            </div>
-            <div style={{ display: "flex", gap: "8px", marginTop: "16px" }}>
-              <SecondaryButton onClick={() => setDrawerType(null)}>
+            /> */}
+            <DateText>
+              {selectedAchievement.date ? (
+                <>
+                  Получена
+                  <br />
+                  formatDateTime(selectedAchievement.date)
+                </>
+              ) : (
+                "Еще не получена"
+              )}
+            </DateText>
+            <GiftCard>
+              <GiftCardItem>
+                <span>Приз за ачивку </span>
+                {
+                  CLUB_REWARDS.find(
+                    (r) => r.level === selectedAchievement.achievement.level,
+                  )?.reward
+                }
+              </GiftCardItem>
+              <ButtonWrapper onClick={() => navigate("/rewards")}>
+                Смотреть все призы
+                <img src={arrow_right} />
+              </ButtonWrapper>
+            </GiftCard>
+
+            <div
+              style={{
+                display: "flex",
+                gap: "8px",
+                flexDirection: "column",
+                marginTop: "16px",
+              }}
+            >
+              <AppButton onClick={() => setDrawerType(null)} variant="grey">
                 Закрыть
-              </SecondaryButton>
+              </AppButton>
             </div>
           </>
         ) : drawerType === "editProfile" ? (
@@ -382,10 +434,20 @@ export const ProfilePage: React.FC<Props> = ({
               placeholder="Фамилия"
             />
             <div style={{ display: "flex", gap: "8px", marginTop: "16px" }}>
-              <AccentButton onClick={saveName}>Сохранить</AccentButton>
+              <AppButton onClick={saveName} size="wide">
+                Сохранить
+              </AppButton>
+              <AppButton
+                onClick={() => setDrawerType(null)}
+                size="wide"
+                variant="grey"
+              >
+                Отмена
+              </AppButton>
+              {/* <AccentButton onClick={saveName}>Сохранить</AccentButton>
               <SecondaryButton onClick={() => setDrawerType(null)}>
                 Отмена
-              </SecondaryButton>
+              </SecondaryButton> */}
             </div>
           </>
         ) : (
@@ -403,29 +465,36 @@ export const ProfilePage: React.FC<Props> = ({
 const ProfileHeader = styled.div`
   display: flex;
   flex-direction: column;
-  align-items: center;
   margin-bottom: 24px;
   gap: 16px;
+  padding: 16px;
+  box-sizing: border-box;
 `;
 
 const Page = styled.div`
   max-width: 900px;
   margin: 0 auto;
-  padding: 24px 16px 80px;
   width: 100vw;
   min-height: 100vh;
   cursor: default;
   user-select: none;
   padding-top: var(--tg-top);
+
+  background-image: url("../../assets/images/gradient_bg.png");
+  background-repeat: no-repeat;
+  background-size: 180%;
 `;
 
 const Center = styled.div`
   padding: 32px;
-  text-align: center;
 `;
 
 const Name = styled.h2`
   margin-bottom: 16px;
+  font-size: 36px;
+  font-weight: 600;
+  line-height: 100%;
+  margin: 0;
 `;
 
 const Stats = styled.div`
@@ -433,29 +502,50 @@ const Stats = styled.div`
   justify-content: center;
   gap: 0;
   flex-direction: row;
-  border-radius: 12px;
   font-size: 14px;
   overflow: hidden;
   width: 100%;
+  gap: 8px;
 `;
 
 const StatCard = styled.div`
-  padding: 16px 20px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  border-left: 1px solid #292929;
   gap: 8px;
 
-  &:first-child {
-    border-left: none;
+  background: #141414;
+  border-radius: 16px;
+  align-items: flex-start;
+  overflow: hidden;
+  padding: 16px 12px;
+  height: 110px;
+  line-height: 100%;
+`;
+
+const GiftCard = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  gap: 8px;
+
+  background: #141414;
+  border-radius: 16px;
+  align-items: flex-start;
+  overflow: hidden;
+  line-height: 100%;
+
+  span {
+    opacity: 0.5;
   }
 `;
 
 const StatValue = styled.div`
-  font-size: 16px;
+  font-size: 20px;
   font-weight: 600;
 `;
 
@@ -546,16 +636,13 @@ const Muted = styled.div`
   align-items: center;
 `;
 
-const MutedImage = styled.img`
-  width: 150px;
-`;
-
 const UsernameBadge = styled.div`
-  background-color: #292929;
-  border-radius: 12px;
-  padding: 4px 8px;
+  background-color: #141414;
+  border-radius: 50px;
+  padding: 8px 12px;
   font-size: 12px;
   color: #777777;
+  font-weight: 500;
   width: fit-content;
 `;
 
@@ -606,3 +693,73 @@ const SecondaryButton = styled.button`
   font-size: 11px;
   width: 100%;
 `;
+
+const AvatarImage = styled.img`
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  object-fit: cover;
+`;
+
+const DrawerAchievementCard = styled.div`
+  display: flex;
+  justify-content: center;
+  perspective: 1000px; /* важно для 3D эффекта */
+  margin: 16px 0;
+`;
+
+const DrawerAchievementImage = styled.img`
+  width: 200px;
+  border-radius: 12px;
+  transition: transform 0.2s ease;
+  transform-style: preserve-3d;
+
+  /* Наведение курсора с динамическим наклоном */
+  &:hover {
+    transform: rotateX(10deg) rotateY(10deg);
+    cursor: pointer;
+  }
+`;
+
+const Separator = styled.div`
+  width: 100%;
+  height: 1px;
+  background: rgba(38, 38, 38, 0.5);
+  margin: 16px 0;
+`;
+
+const DateText = styled.div`
+  font-size: 14px;
+  color: ${({ theme }) => theme.colors.muted};
+  text-align: center;
+  margin-top: 8px;
+  margin-bottom: 20px;
+`;
+
+const ButtonWrapper = styled.div`
+  justify-content: space-between;
+  width: calc(100% - 32px);
+  display: flex;
+  align-items: center;
+  color: #808080;
+  border-top: 1px solid #8080801a;
+  font-weight: 500;
+  padding: 16px 0;
+  margin: 0 16px;
+  box-sizing: border-box;
+  cursor: pointer;
+  transition: 0.15s ease;
+  font-size: 15px;
+`;
+
+const GiftCardItem = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 16px;
+`;
+
+// const buttonImage = styled.img`
+//   width: 16px;
+//   filter: invert(100%) sepia(100%) grayscale(100%) brightness(200%);
+// `;

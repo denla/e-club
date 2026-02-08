@@ -4,65 +4,65 @@ import { Link, useLocation } from "react-router-dom";
 
 import leaderboardIcon from "../../assets/icons/BottomNav/leader_icon.svg";
 import profileIcon from "../../assets/icons/BottomNav/profile_icon.svg";
-// import adminIcon from "../../assets/icons/BottomNav/admin_icon.svg";
 import plusIcon from "../../assets/icons/BottomNav/plus_button.svg";
+import rewardsIcon from "../../assets/icons/BottomNav/rewards_icon.svg";
 
 interface Props {
-  uid?: string; // uid текущего пользователя
+  uid?: string;
 }
 
 export const BottomNav = ({ uid }: Props) => {
   const location = useLocation();
-  //   const profileLink = uid ? `/users/${uid}` : "/login";
   const profileLink = uid ? `/users/${uid}` : "/users";
 
-  let active: "leaderboard" | "profile" | "admin" = "leaderboard";
-  if (location.pathname.startsWith("/admin")) active = "admin";
-  else if (location.pathname.startsWith("/users/")) active = "profile";
+  let active: "leaderboard" | "profile" | "rewards" = "leaderboard";
+
+  if (location.pathname.startsWith("/users/")) active = "profile";
+  else if (location.pathname.startsWith("/rewards")) active = "rewards";
   else if (location.pathname === "/users") active = "leaderboard";
 
   return (
     <nav className={styles.nav}>
+      <Link to="/request" className={styles.small}>
+        <div className={styles.plusButtonWrapper}>
+          <button className={styles.plusButton}>
+            <img src={plusIcon} alt="Visit" />
+            <span>Посещение</span>
+          </button>
+        </div>
+      </Link>
+      {/* Лидерборд */}
       <Link to="/users" className={styles.link}>
         <button
-          className={`${styles.bottomTab} ${active === "leaderboard" ? styles.active : ""}`}
+          className={`${styles.bottomTab} ${
+            active === "leaderboard" ? styles.active : ""
+          }`}
         >
           <img src={leaderboardIcon} alt="leaderboard" />
           <span>Лидерборд</span>
         </button>
       </Link>
 
-      <Link to="/request" className={styles.link}>
+      {/* Призы */}
+      <Link to="/rewards" className={styles.link}>
         <button
-          style={{
-            fontSize: "12px",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-            alignItems: "center",
-            width: "100%",
-            gap: "4px",
-            color: "#b2b2b2",
-            outline: "none",
-          }}
+          className={`${styles.bottomTab} ${
+            active === "rewards" ? styles.active : ""
+          }`}
         >
-          <img src={plusIcon} alt="Admin" />
-          <span>Посещение</span>
+          <img src={rewardsIcon} alt="Rewards" />
+          <span>Призы</span>
         </button>
       </Link>
 
-      {/* <Link to="/admin" className={styles.link}>
-        <button
-          className={`${styles.bottomTab} ${active === "admin" ? styles.active : ""}`}
-        >
-          <img src={adminIcon} alt="Admin" />
-          <span>Админ</span>
-        </button>
-      </Link> */}
+      {/* Посещение */}
 
+      {/* Профиль */}
       <Link to={profileLink} className={styles.link}>
         <button
-          className={`${styles.bottomTab} ${active === "profile" ? styles.active : ""}`}
+          className={`${styles.bottomTab} ${
+            active === "profile" ? styles.active : ""
+          }`}
         >
           <img src={profileIcon} alt="Profile" />
           <span>Профиль</span>

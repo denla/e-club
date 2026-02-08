@@ -4,6 +4,8 @@ import logo from "../../assets/logo/logo.svg";
 import welcome_img1 from "../../assets/images/welcome/welcome_img1.png";
 import welcome_img2 from "../../assets/images/welcome/welcome_img2.png";
 import welcome_img3 from "../../assets/images/welcome/welcome_img3.png";
+import { AppButton } from "../AppButton/AppButton";
+import AppHeader from "../AppHeader/AppHeader";
 
 const SLIDE_DURATION = 5000;
 
@@ -24,6 +26,11 @@ const slides = [
     image: welcome_img3,
   },
 ];
+
+type Props = {
+  onCreateAccount: () => Promise<void>;
+  tgReady: boolean;
+};
 
 export const WelcomeSlider: React.FC<Props> = ({
   onCreateAccount,
@@ -80,11 +87,7 @@ export const WelcomeSlider: React.FC<Props> = ({
       onTouchStart={onTouchStart}
       onTouchEnd={onTouchEnd}
     >
-      <header className={styles.header}>
-        <img src={logo} className={styles.logoImage} />
-        <span className={styles.badge}>FANS</span>
-      </header>
-
+      <AppHeader />
       <div className={styles.viewport}>
         <div
           className={styles.track}
@@ -129,58 +132,61 @@ export const WelcomeSlider: React.FC<Props> = ({
         })}
       </div>
 
-      <button
-        className={styles.button}
-        onClick={tgReady ? onCreateAccount : undefined}
+      <AppButton
+        size="wide"
+        variant="orange"
+        onClick={onCreateAccount}
+        disabled={!tgReady}
       >
         Стать болельщиком
-      </button>
+      </AppButton>
     </div>
   );
 };
 
-import React from "react";
+// import React from "react";
+// import { AppButton } from "../AppButton/AppButton";
 
-type Props = {
-  onCreateAccount: () => Promise<void>;
-  tgReady: boolean;
-};
+// type Props = {
+//   onCreateAccount: () => Promise<void>;
+//   tgReady: boolean;
+// };
 
-const WelcomePage: React.FC<Props> = ({ onCreateAccount, tgReady }) => {
-  return (
-    <div
-      style={{
-        height: "100vh",
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
-        alignItems: "center",
-        padding: 24,
-        textAlign: "center",
-      }}
-    >
-      <h1>Добро пожаловать 👋</h1>
-      <p style={{ marginBottom: 24 }}>
-        Это ваш первый вход. Создайте аккаунт, чтобы продолжить.
-      </p>
+// const WelcomePage: React.FC<Props> = ({ onCreateAccount, tgReady }) => {
+//   return (
+//     <div
+//       style={{
+//         height: "100vh",
+//         display: "flex",
+//         flexDirection: "column",
+//         justifyContent: "center",
+//         alignItems: "center",
+//         padding: 24,
+//         textAlign: "center",
+//       }}
+//     >
+//       <h1>Добро пожаловать 👋</h1>
+//       <p style={{ marginBottom: 24 }}>
+//         Это ваш первый вход. Создайте аккаунт, чтобы продолжить.
+//       </p>
 
-      <button
-        onClick={tgReady ? onCreateAccount : undefined}
-        style={{
-          padding: "12px 24px",
-          fontSize: 16,
-          borderRadius: 8,
-          border: "none",
-          background: "#2ea6ff",
-          color: "#fff",
-          cursor: tgReady ? "pointer" : "not-allowed",
-          opacity: tgReady ? 1 : 0.5,
-        }}
-      >
-        Создать аккаунт
-      </button>
-    </div>
-  );
-};
+//       <button
+//         onClick={tgReady ? onCreateAccount : undefined}
+//         style={{
+//           padding: "12px 24px",
+//           fontSize: 16,
+//           borderRadius: 8,
+//           border: "none",
+//           background: "#2ea6ff",
+//           color: "#fff",
+//           cursor: tgReady ? "pointer" : "not-allowed",
+//           opacity: tgReady ? 1 : 0.5,
+//         }}
+//       >
+//         Создать аккаунт
+//       </button>
+//     </div>
+//   );
+// };
 
-export default WelcomePage;
+// export default WelcomePage;

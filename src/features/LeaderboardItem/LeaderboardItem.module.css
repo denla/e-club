@@ -6,7 +6,7 @@
   gap: 12px;
   color: white;
   transition: 0.2s ease;
-  border-top: 1px solid #2929298c;
+  /* border-top: 1px solid #2929298c; */
 }
 
 .left {
@@ -36,7 +36,7 @@
 
 .name {
   font-size: 16px;
-  font-weight: 500;
+  font-weight: 400;
 }
 
 .sub {
@@ -75,13 +75,13 @@
   color: #7a7a7a;
   padding: 4px 8px;
   border-radius: 12px;
-  font-size: 12px;
+  font-size: 10px;
   letter-spacing: 1px;
   font-weight: 600;
 }
 
 .count {
   color: #7a7a7a;
-  font-size: 12px;
-  font-family: "Disket Mono", monospace;
+  font-size: 10px;
+  font-family: "Lab Grotesque", system-ui, sans-serif;
 }

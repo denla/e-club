@@ -1,12 +1,15 @@
 import React from "react";
 import styles from "./AppHeader.module.css";
+import logo from "../../assets/logo/logo.svg";
 
-import logoImg from "../../assets/logo/app_logo.svg"; // путь к вашему логотипу
+type Props = {
+  align?: "left" | "center";
+};
 
-const AppHeader: React.FC = () => {
+const AppHeader: React.FC<Props> = ({ align = "center" }) => {
   return (
-    <header className={styles.header}>
-      <img src={logoImg} alt="Logo" className={styles.logo} />
+    <header className={`${styles.header} ${styles[align]}`}>
+      <img src={logo} className={styles.logo} alt="logo" />
     </header>
   );
 };

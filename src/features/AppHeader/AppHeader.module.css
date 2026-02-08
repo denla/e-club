@@ -9,6 +9,10 @@
 }
 
 .logo {
-  height: 24px; /* подгоняем размер логотипа */
+  height: 32px; /* подгоняем размер логотипа */
   object-fit: contain;
+}
+
+.left {
+  justify-content: flex-start;
 }

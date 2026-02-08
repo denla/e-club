@@ -80,7 +80,7 @@ const Content = styled.div`
   display: flex;
   width: 100%;
   max-width: 500px;
-  background: #141414;
+  background: #0d0d0d;
   border-top-left-radius: 20px;
   border-top-right-radius: 20px;
   padding: 24px;

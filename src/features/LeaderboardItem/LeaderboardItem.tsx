@@ -1,5 +1,8 @@
 import { Link } from "react-router-dom";
 import styles from "./LeaderboardItem.module.css";
+import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
+import { useState } from "react";
 
 // Интерфейс пользователя для LeaderboardItem
 interface Telegram {
@@ -22,6 +25,7 @@ interface Props {
 
 export const LeaderboardItem: React.FC<Props> = ({ user }) => {
   const avatarUrl = user.telegram?.photo_url;
+  const [loaded, setLoaded] = useState(false);
 
   return (
     <Link to={`/users/${user.uid}`} className={styles.link}>
@@ -30,11 +34,23 @@ export const LeaderboardItem: React.FC<Props> = ({ user }) => {
         <div className={styles.left}>
           {/* Аватар */}
           {avatarUrl ? (
-            <img
-              src={avatarUrl}
-              alt={`${user.firstName} ${user.lastName}`}
-              className={styles.avatarImage}
-            />
+            <SkeletonTheme
+              baseColor="#292929" // тёмный фон скелета
+              highlightColor="#3a3a3a" // светлее для "шейдинга"
+            >
+              {!loaded && <Skeleton circle width={48} height={48} />}
+              <img
+                src={avatarUrl}
+                alt={`${user.firstName} ${user.lastName}`}
+                className={styles.avatarImage}
+                style={{
+                  display: loaded ? "block" : "none",
+                  transition: "opacity 0.3s ease",
+                  opacity: loaded ? 1 : 0,
+                }}
+                onLoad={() => setLoaded(true)}
+              />
+            </SkeletonTheme>
           ) : (
             <div className={styles.avatar}>{user.firstName[0]}</div>
           )}
