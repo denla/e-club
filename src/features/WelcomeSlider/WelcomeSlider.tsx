@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 import styles from "./WelcomeSlider.module.css";
-import logo from "../../assets/logo/logo.svg";
 import welcome_img1 from "../../assets/images/welcome/welcome_img1.png";
 import welcome_img2 from "../../assets/images/welcome/welcome_img2.png";
 import welcome_img3 from "../../assets/images/welcome/welcome_img3.png";
