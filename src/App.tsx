@@ -42,7 +42,7 @@ const MOCK_TG_USER: TelegramUser = {
   photo_url: "https://via.placeholder.com/100",
 };
 
-const USE_MOCK = true; // true для теста вне Telegram WebApp
+const USE_MOCK = false; // true для теста вне Telegram WebApp
 
 const App: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
@@ -144,7 +144,7 @@ const App: React.FC = () => {
       await setDoc(doc(db, "users", uid), newUser);
       setCurrentUser(newUser);
       setNeedsRegistration(false);
-      alert("Аккаунт успешно создан!");
+      // alert("Аккаунт успешно создан!");
     } catch (error) {
       alert("Ошибка при создании аккаунта: " + (error as any).message);
     }

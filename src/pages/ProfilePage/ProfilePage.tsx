@@ -16,7 +16,6 @@ import AchievmentActive5 from "../../assets/images/achievments/5_active.png";
 import AchievmentActive6 from "../../assets/images/achievments/6_active.png";
 import AchievmentActive7 from "../../assets/images/achievments/7_active.png";
 import AchievmentActive8 from "../../assets/images/achievments/8_active.png";
-import AchievmentActive9 from "../../assets/images/achievments/9_active.png";
 import AchievmentActive10 from "../../assets/images/achievments/10_active.png";
 
 import AchievmentInactive1 from "../../assets/images/achievments/1_disabled.png";
@@ -27,7 +26,6 @@ import AchievmentInactive5 from "../../assets/images/achievments/5_disabled.png"
 import AchievmentInactive6 from "../../assets/images/achievments/6_disabled.png";
 import AchievmentInactive7 from "../../assets/images/achievments/7_disabled.png";
 import AchievmentInactive8 from "../../assets/images/achievments/8_disabled.png";
-import AchievmentInactive9 from "../../assets/images/achievments/9_disabled.png";
 import AchievmentInactive10 from "../../assets/images/achievments/10_disabled.png";
 
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
@@ -122,17 +120,17 @@ const ACHIEVEMENTS = [
     activeIcon: AchievmentActive8,
     inactiveIcon: AchievmentInactive8,
   },
+  // {
+  //   id: "lvl_25",
+  //   title: "На страже команды",
+  //   level: 25,
+  //   activeIcon: AchievmentActive9,
+  //   inactiveIcon: AchievmentInactive9,
+  // },
   {
     id: "lvl_25",
-    title: "На страже команды",
-    level: 25,
-    activeIcon: AchievmentActive9,
-    inactiveIcon: AchievmentInactive9,
-  },
-  {
-    id: "lvl_30",
     title: "Верность клубу",
-    level: 30,
+    level: 25,
     activeIcon: AchievmentActive10,
     inactiveIcon: AchievmentInactive10,
   },
@@ -217,7 +215,7 @@ export const ProfilePage: React.FC<Props> = ({
   return (
     <Page>
       {/* ===== HEADER ===== */}
-      <AppHeader align="left" />
+      <AppHeader />
       <ProfileHeader>
         <AvatarImage
           src={avatarUrl}
@@ -233,9 +231,7 @@ export const ProfilePage: React.FC<Props> = ({
           {!avatarLoaded && <Skeleton circle width={90} height={90} />}
         </SkeletonTheme>
         <Name>
-          {firstName}
-          <br />
-          {lastName}
+          {firstName} {lastName}
         </Name>
         {user.telegram?.username && (
           <UsernameBadge>
@@ -386,7 +382,7 @@ export const ProfilePage: React.FC<Props> = ({
                 <>
                   Получена
                   <br />
-                  formatDateTime(selectedAchievement.date)
+                  {formatDateTime(selectedAchievement.date)}
                 </>
               ) : (
                 "Еще не получена"

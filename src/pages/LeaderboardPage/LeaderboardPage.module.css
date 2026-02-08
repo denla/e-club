@@ -4,7 +4,6 @@
   color: #fff;
   padding-bottom: 80px;
   width: 100vw;
-  padding-top: var(--tg-top);
 
   padding: 0 8px;
   box-sizing: border-box;
@@ -12,6 +11,10 @@
   background-image: url("../../assets/images/gradient_bg.png");
   background-repeat: no-repeat;
   background-size: 180%;
+
+  max-width: 900px;
+  margin: 0 auto;
+  padding-top: var(--tg-top);
 }
 /* Анимация шапки */
 .top {
@@ -19,7 +22,7 @@
   transition:
     max-height 300ms ease,
     opacity 200ms ease,
-    transform 300ms ease;
+    transform 200ms ease;
   max-height: 4400px;
   opacity: 1;
   transform: translateY(0);
@@ -28,7 +31,7 @@
 .collapsed {
   max-height: 0;
   opacity: 0;
-  transform: translateY(-12px);
+  transform: translateY(-10px);
 }
 
 /* Header */
@@ -155,4 +158,8 @@
 
 .topContent span {
   opacity: 0.6;
+}
+
+.noBackground {
+  background: none !important;
 }

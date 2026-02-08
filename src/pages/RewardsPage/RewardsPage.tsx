@@ -9,7 +9,7 @@ import styles from "./RewardsPage.module.css";
 export const RewardsPage: React.FC = () => {
   return (
     <div className={styles.page}>
-      <AppHeader align="left" />
+      <AppHeader />
       <div className={styles.topContent}>
         Призы <span>от клуба</span>
       </div>
@@ -28,11 +28,11 @@ export const RewardsPage: React.FC = () => {
         {CLUB_REWARDS.map((reward) => (
           <Card key={reward.id}>
             <ImageWrapper>
-              <RewardImage src={reward.img} alt={reward.title} />
+              <RewardImage src={reward.img} alt={reward.reward} />
             </ImageWrapper>
 
             <CardContent>
-              <RewardTitle>{reward.title}</RewardTitle>
+              <RewardTitle>{reward.reward}</RewardTitle>
               <Level>{reward.level} посещений</Level>
             </CardContent>
           </Card>

@@ -1,11 +1,10 @@
-import { useRef, useState } from "react";
+import { useRef, useState, useMemo } from "react";
 import styles from "./LeaderboardPage.module.css";
 import { LeaderboardItem } from "../../features/LeaderboardItem/LeaderboardItem";
 import type { User as AppUser } from "../../types";
 
 import searchIcon from "../../assets/icons/search_icon.svg";
 import closeIcon from "../../assets/icons/close_icon.svg";
-// import cupImg from "../../assets/images/welcome/welcome_img1.png";
 import infocard_cup from "../../assets/images/info/infocard_cup.png";
 
 import AppHeader from "../../features/AppHeader/AppHeader";
@@ -20,71 +19,66 @@ export const LeaderboardPage: React.FC<Props> = ({ users }) => {
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
+  // Режим активного поиска
+  const isSearchActive = isSearchFocused || query.length > 0;
+
   // Фильтрация пользователей
-  const filteredUsers = users.filter((user) => {
+  const filteredUsers = useMemo(() => {
     const search = query.toLowerCase().trim();
-    if (!search) return true;
+    if (!search) return users;
 
-    const fullText = [user.firstName, user.lastName, user.telegram?.username]
-      .filter(Boolean)
-      .join(" ")
-      .toLowerCase();
+    return users.filter((user) => {
+      const fullText = [user.firstName, user.lastName, user.telegram?.username]
+        .filter(Boolean)
+        .join(" ")
+        .toLowerCase();
 
-    return fullText.includes(search);
-  });
+      return fullText.includes(search);
+    });
+  }, [users, query]);
 
-  const leaderboardUsers = [...filteredUsers].sort(
-    (a, b) => b.visitsCount - a.visitsCount,
-  );
+  // Сортировка по visitsCount
+  const leaderboardUsers = useMemo(() => {
+    return [...filteredUsers].sort((a, b) => b.visitsCount - a.visitsCount);
+  }, [filteredUsers]);
 
-  // Выход из режима поиска (кнопка ✕)
+  // Очистка поиска
   const exitSearch = () => {
     setQuery("");
-    inputRef.current?.blur();
     setIsSearchFocused(false);
+    inputRef.current?.blur();
   };
 
   return (
-    <div className={styles.page}>
-      {/* Верхняя часть с анимацией */}
+    <div
+      className={`${styles.page} ${isSearchActive ? styles.noBackground : ""}`}
+    >
+      {/* Верхняя часть */}
       <div
-        className={`${styles.top} ${isSearchFocused ? styles.collapsed : ""}`}
+        className={`${styles.top} ${isSearchActive ? styles.collapsed : ""}`}
       >
-        {/* <header className={styles.header}>
-          <span className={styles.logo}>Electron App</span>
-        </header> */}
+        <AppHeader />
 
-        <AppHeader align="left" />
         <div className={styles.topContent}>
           Лучшие <span>болельщики</span>
         </div>
 
         <InfoCard
-          title="Поднимайся в общем рейтинге"
-          subtitle="Зарабатывай очки за активность и занимай первые строки"
+          title="Поднимайся в общем рейтинге"
+          subtitle="Зарабатывай очки за активность и занимай первые строки"
           image={infocard_cup}
           buttonText="Узнать больше"
           onClick={() =>
             alert("Здесь будет подробная информация о топе болельщиков!")
           }
         />
-        {/* <div className={styles.topContent}>
-          <img src={cupImg} alt="Cup" className={styles.topImg} />
-          <div className={styles.topHeader}>Топ болельщиков</div>
-          <div className={styles.topDescription}>
-            Зарабатывай очки за активность
-            <br /> и поднимайся в общем рейтинге
-          </div>
-        </div> */}
       </div>
 
-      {/* Список пользователей */}
+      {/* Список */}
       <div className={styles.list}>
-        {/* Поле поиска с иконками */}
-
         <div
           className={`${styles.searchWrapper} ${
-            isSearchFocused ? styles.focused : ""
+            isSearchActive ? styles.focused : ""
           }`}
         >
           {/* Левая иконка */}
@@ -98,14 +92,10 @@ export const LeaderboardPage: React.FC<Props> = ({ users }) => {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onFocus={() => setIsSearchFocused(true)}
-            onBlur={() => {
-              // небольшой таймаут чтобы клик по кресту успел сработать
-              setTimeout(() => setIsSearchFocused(false), 50);
-            }}
           />
 
-          {/* Правая кнопка очистки */}
-          {isSearchFocused && (
+          {/* Кнопка очистки */}
+          {isSearchActive && (
             <div
               className={styles.clearButton}
               onMouseDown={(e) => e.preventDefault()}
@@ -116,7 +106,6 @@ export const LeaderboardPage: React.FC<Props> = ({ users }) => {
           )}
         </div>
 
-        {/* <h1 className={styles.cardHeader}>Лидерборд</h1> */}
         {leaderboardUsers.map((user, index) => (
           <LeaderboardItem key={user.uid} user={{ ...user, rank: index + 1 }} />
         ))}

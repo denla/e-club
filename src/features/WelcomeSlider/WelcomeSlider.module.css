@@ -10,13 +10,13 @@
   background-image: url("../../assets/images/gradient_bg.png");
   background-repeat: no-repeat;
   background-size: 180%;
+  padding-top: var(--tg-top);
 }
 
 .header {
   display: flex;
   justify-content: center;
   gap: 4px;
-  margin-top: 12px;
   align-items: center;
 }
 
@@ -61,7 +61,7 @@
 } */
 
 .image {
-  width: 220px;
+  width: 160px;
 }
 .logoImage {
   height: 36px;
@@ -196,4 +196,62 @@
   object-fit: contain;
   /* добавляем анимацию появления */
   animation: scaleUp 0.3s ease forwards;
+}
+
+/* ---------- Indicators ---------- */
+
+.indicators {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+.indicator {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #555;
+  border: none;
+  padding: 0;
+  position: relative;
+  transition: 0.15s ease;
+}
+
+.active {
+  width: 24px;
+  height: 6px;
+  border-radius: 12px;
+  background: #333;
+  overflow: hidden;
+}
+
+.progress {
+  position: absolute;
+  inset: 0;
+  background: #fff;
+  transform-origin: left;
+  animation: progressAnim 5s linear forwards;
+}
+
+/* ---------- Animations ---------- */
+
+@keyframes progressAnim {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes scaleUp {
+  from {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
