@@ -25,7 +25,6 @@ const slides = [
     image: welcome_img3,
   },
 ];
-
 type Props = {
   onCreateAccount: () => Promise<void>;
   tgReady: boolean;
