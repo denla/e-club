@@ -681,19 +681,6 @@ const AccentButton = styled.button`
   width: 100%;
 `;
 
-const SecondaryButton = styled.button`
-  background: #ffffff2e;
-  border: none;
-  color: #ffffff;
-  font-weight: 700;
-  padding: 12px 20px;
-  border-radius: 50px;
-  margin-bottom: 16px;
-  font-family: "Disket Mono", monospace;
-  font-size: 11px;
-  width: 100%;
-`;
-
 const AvatarImage = styled.img`
   width: 90px;
   height: 90px;
