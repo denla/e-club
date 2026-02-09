@@ -53,44 +53,83 @@ const App: React.FC = () => {
   useTelegramInsets();
 
   useEffect(() => {
-    // --- подписка на всех пользователей Firestore
-    const unsubUsers = onSnapshot(collection(db, "users"), (snapshot) => {
-      const usersData: User[] = snapshot.docs.map((doc) => doc.data() as User);
-      setUsers(usersData);
-    });
+    const unsubUsers = onSnapshot(
+      collection(db, "users"),
+      (snapshot) => {
+        const usersData: User[] = snapshot.docs.map(
+          (doc) => doc.data() as User,
+        );
+        setUsers(usersData);
+      },
+      (error) => {
+        console.error("Users subscription error:", error);
+      },
+    );
 
-    // --- проверка Telegram WebApp готовности
-    if (window.Telegram?.WebApp) {
-      setTgReady(true);
-    }
-
-    // --- инициализация текущего пользователя
     const init = async () => {
-      let tgUser: TelegramUser | undefined;
+      try {
+        // 1️⃣ Telegram ready
+        if (window.Telegram?.WebApp) {
+          window.Telegram.WebApp.ready();
+          setTgReady(true);
+        }
 
-      if (window.Telegram?.WebApp?.initDataUnsafe?.user) {
-        tgUser = window.Telegram.WebApp.initDataUnsafe.user as TelegramUser;
-      } else if (USE_MOCK) {
-        tgUser = MOCK_TG_USER;
-      }
+        // 2️⃣ Ждём user от Telegram
+        const getTelegramUser = async (): Promise<TelegramUser | null> => {
+          if (USE_MOCK) return MOCK_TG_USER;
 
-      if (!tgUser) {
-        alert("Telegram user not found и USE_MOCK выключен!");
-        setLoading(false);
-        return;
-      }
+          const maxAttempts = 25; // ~5 секунд
+          let attempts = 0;
 
-      const uid = String(tgUser.id);
-      const docSnap = await getDoc(doc(db, "users", uid));
+          return new Promise((resolve) => {
+            const check = () => {
+              const user = window.Telegram?.WebApp?.initDataUnsafe?.user;
 
-      if (docSnap.exists()) {
-        setCurrentUser(docSnap.data() as User);
-        setNeedsRegistration(false);
-      } else {
+              if (user) {
+                resolve(user as TelegramUser);
+                return;
+              }
+
+              attempts++;
+
+              if (attempts >= maxAttempts) {
+                resolve(null);
+                return;
+              }
+
+              setTimeout(check, 200);
+            };
+
+            check();
+          });
+        };
+
+        const tgUser = await getTelegramUser();
+
+        if (!tgUser) {
+          console.warn("Telegram user not received");
+          setNeedsRegistration(true);
+          return;
+        }
+
+        // 3️⃣ Проверяем Firestore
+        const uid = String(tgUser.id);
+        const docRef = doc(db, "users", uid);
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+          setCurrentUser(docSnap.data() as User);
+          setNeedsRegistration(false);
+        } else {
+          setNeedsRegistration(true);
+        }
+      } catch (error) {
+        console.error("INIT ERROR:", error);
         setNeedsRegistration(true);
+      } finally {
+        // 4️⃣ Гарантированно выключаем loader
+        setLoading(false);
       }
-
-      setLoading(false);
     };
 
     init();
