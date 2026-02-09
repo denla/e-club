@@ -41,7 +41,6 @@ const MOCK_TG_USER: TelegramUser = {
   language_code: "ru",
   photo_url: "https://via.placeholder.com/100",
 };
-
 const USE_MOCK = false; // true для теста вне Telegram WebApp
 
 const App: React.FC = () => {
