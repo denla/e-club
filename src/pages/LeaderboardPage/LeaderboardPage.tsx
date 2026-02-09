@@ -74,7 +74,6 @@ export const LeaderboardPage: React.FC<Props> = ({ users, uid }) => {
           onClick={() => navigate(profileLink)}
         />
       </div>
-
       {/* Список */}
       <div className={styles.list}>
         <div
