@@ -4,7 +4,6 @@
   color: #fff;
   padding-bottom: 80px;
   width: 100vw;
-  padding-top: var(--tg-top);
 
   padding: 0 8px;
   box-sizing: border-box;
@@ -12,6 +11,7 @@
   background-image: url("../../assets/images/gradient_bg.png");
   background-repeat: no-repeat;
   background-size: 180%;
+  padding-top: var(--tg-top);
 }
 
 .topContent {

@@ -253,13 +253,23 @@ export const ProfilePage: React.FC<Props> = ({
         )}
 
         {currentUser?.role === "admin" && currentUser.uid !== user.uid && (
-          <AccentButton
+          <AppButton
             onClick={async () => {
               try {
                 const userRef = doc(db, "users", user.uid);
+
+                // Создаем новую запись в истории
+                const newVisit = {
+                  level: (user.visitsCount || 0) + 1, // текущий уровень + 1
+                  date: new Date(), // сохраняем текущее время
+                };
+
+                // Обновляем visitsCount и добавляем запись в историю
                 await updateDoc(userRef, {
                   visitsCount: (user.visitsCount || 0) + 1,
+                  visits: [...(user.visits || []), newVisit], // добавляем новую запись
                 });
+
                 alert("Рейтинг пользователя повышен!");
               } catch (error) {
                 console.error(error);
@@ -268,7 +278,7 @@ export const ProfilePage: React.FC<Props> = ({
             }}
           >
             Повысить рейтинг
-          </AccentButton>
+          </AppButton>
         )}
         <Separator />
         <Stats>

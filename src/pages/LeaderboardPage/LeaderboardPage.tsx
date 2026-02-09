@@ -53,12 +53,11 @@ export const LeaderboardPage: React.FC<Props> = ({ users }) => {
     <div
       className={`${styles.page} ${isSearchActive ? styles.noBackground : ""}`}
     >
+      <AppHeader />
       {/* Верхняя часть */}
       <div
         className={`${styles.top} ${isSearchActive ? styles.collapsed : ""}`}
       >
-        <AppHeader />
-
         <div className={styles.topContent}>
           Лучшие <span>болельщики</span>
         </div>

@@ -16,9 +16,6 @@ import {
 import { db } from "./firebase";
 
 import { ScrollToTop } from "./components/ScrollToTop";
-
-// import Navbar from "./components/Navbar";
-
 import { LeaderboardPage } from "./pages/LeaderboardPage/LeaderboardPage";
 import { BottomNav } from "./features/BottomNav/BottomNav";
 import { ProfilePage } from "./pages/ProfilePage/ProfilePage";
@@ -29,10 +26,9 @@ import { RewardsPage } from "./pages/RewardsPage/RewardsPage";
 
 import type { User, TelegramUser } from "./types";
 import Preloader from "./features/Preloader/Preloader";
-
 import { useTelegramInsets } from "./hooks/useTelegramInsets";
 
-// --- моковые данные для теста вне Telegram WebApp
+// --- MOCK для разработки вне Telegram
 const MOCK_TG_USER: TelegramUser = {
   id: 999999,
   first_name: "Тест",
@@ -41,14 +37,14 @@ const MOCK_TG_USER: TelegramUser = {
   language_code: "ru",
   photo_url: "https://via.placeholder.com/100",
 };
-const USE_MOCK = false; // true для теста вне Telegram WebApp
+
+const USE_MOCK = true;
 
 const App: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
-  const [needsRegistration, setNeedsRegistration] = useState<boolean>(false);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [tgReady, setTgReady] = useState(false);
+  const [needsRegistration, setNeedsRegistration] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useTelegramInsets();
 
@@ -68,66 +64,31 @@ const App: React.FC = () => {
 
     const init = async () => {
       try {
-        // 1️⃣ Telegram ready
+        // Telegram ready (без отображения пользователю)
         if (window.Telegram?.WebApp) {
           window.Telegram.WebApp.ready();
-          setTgReady(true);
+          window.Telegram.WebApp.expand();
         }
 
-        // 2️⃣ Ждём user от Telegram
-        const getTelegramUser = async (): Promise<TelegramUser | null> => {
-          if (USE_MOCK) return MOCK_TG_USER;
-
-          const maxAttempts = 25; // ~5 секунд
-          let attempts = 0;
-
-          return new Promise((resolve) => {
-            const check = () => {
-              const user = window.Telegram?.WebApp?.initDataUnsafe?.user;
-
-              if (user) {
-                resolve(user as TelegramUser);
-                return;
-              }
-
-              attempts++;
-
-              if (attempts >= maxAttempts) {
-                resolve(null);
-                return;
-              }
-
-              setTimeout(check, 200);
-            };
-
-            check();
-          });
-        };
-
-        const tgUser = await getTelegramUser();
+        const tgUser = await waitForTelegramUser();
 
         if (!tgUser) {
-          console.warn("Telegram user not received");
           setNeedsRegistration(true);
           return;
         }
 
-        // 3️⃣ Проверяем Firestore
         const uid = String(tgUser.id);
-        const docRef = doc(db, "users", uid);
-        const docSnap = await getDoc(docRef);
+        const docSnap = await getDoc(doc(db, "users", uid));
 
         if (docSnap.exists()) {
           setCurrentUser(docSnap.data() as User);
-          setNeedsRegistration(false);
         } else {
           setNeedsRegistration(true);
         }
       } catch (error) {
-        console.error("INIT ERROR:", error);
+        console.error("Init error:", error);
         setNeedsRegistration(true);
       } finally {
-        // 4️⃣ Гарантированно выключаем loader
         setLoading(false);
       }
     };
@@ -137,22 +98,38 @@ const App: React.FC = () => {
     return () => unsubUsers();
   }, []);
 
-  // --- создание нового пользователя
+  // --- ожидание Telegram user (без зависаний)
+  const waitForTelegramUser = async (): Promise<TelegramUser | null> => {
+    if (USE_MOCK) return MOCK_TG_USER;
+
+    const maxAttempts = 25; // ~5 секунд
+    let attempts = 0;
+
+    return new Promise((resolve) => {
+      const check = () => {
+        const user = window.Telegram?.WebApp?.initDataUnsafe?.user;
+
+        if (user) {
+          resolve(user as TelegramUser);
+          return;
+        }
+
+        attempts++;
+        if (attempts >= maxAttempts) {
+          resolve(null);
+          return;
+        }
+
+        setTimeout(check, 200);
+      };
+
+      check();
+    });
+  };
+
   const createAccount = async () => {
-    let tgUser: TelegramUser | undefined;
-
-    if (USE_MOCK) {
-      tgUser = MOCK_TG_USER;
-    } else {
-      tgUser = window.Telegram?.WebApp?.initDataUnsafe?.user as
-        | TelegramUser
-        | undefined;
-    }
-
-    if (!tgUser) {
-      alert("Telegram WebApp ещё не готов! Попробуйте подождать секунду.");
-      return;
-    }
+    const tgUser = await waitForTelegramUser();
+    if (!tgUser) return;
 
     const uid = String(tgUser.id);
 
@@ -172,8 +149,8 @@ const App: React.FC = () => {
         id: tgUser.id,
         first_name: tgUser.first_name,
         last_name: tgUser.last_name ?? "",
-        username: tgUser.username ?? "", // ✅ исправлено
-        language_code: tgUser.language_code ?? "", // ✅ исправлено
+        username: tgUser.username ?? "",
+        language_code: tgUser.language_code ?? "",
         photo_url: tgUser.photo_url ?? "",
       },
     };
@@ -182,26 +159,24 @@ const App: React.FC = () => {
       await setDoc(doc(db, "users", uid), newUser);
       setCurrentUser(newUser);
       setNeedsRegistration(false);
-      // alert("Аккаунт успешно создан!");
     } catch (error) {
-      alert("Ошибка при создании аккаунта: " + (error as any).message);
+      console.error("Create account error:", error);
     }
   };
 
-  if (loading)
-    return (
-      <div>
-        <Preloader />
-      </div>
-    );
+  if (loading) return <Preloader />;
 
   if (needsRegistration)
-    return <WelcomePage onCreateAccount={createAccount} tgReady={tgReady} />;
+    return (
+      <WelcomePage
+        onCreateAccount={createAccount}
+        tgReady={!!window.Telegram?.WebApp}
+      />
+    );
 
   return (
     <Router>
       <ScrollToTop />
-      {/* <Navbar currentUser={currentUser} /> */}
 
       <Routes>
         <Route path="/" element={<Navigate to="/users" />} />
@@ -214,9 +189,9 @@ const App: React.FC = () => {
           path="/admin"
           element={<AdminPage currentUser={currentUser} />}
         />
-        <Route path="*" element={<Navigate to="/users" />} />
         <Route path="/request" element={<RequestPage />} />
         <Route path="/rewards" element={<RewardsPage />} />
+        <Route path="*" element={<Navigate to="/users" />} />
       </Routes>
 
       <BottomNav uid={currentUser?.uid} />
