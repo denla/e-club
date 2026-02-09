@@ -177,24 +177,32 @@ const App: React.FC = () => {
   return (
     <Router>
       <ScrollToTop />
+      <div
+        style={{ display: "flex", justifyContent: "center", width: "100vw" }}
+      >
+        <Routes>
+          <Route path="/" element={<Navigate to="/users" />} />
+          <Route
+            path="/users"
+            element={<LeaderboardPage users={users} uid={currentUser?.uid} />}
+          />
+          <Route
+            path="/users/:uid"
+            element={
+              <UserProfilePage users={users} currentUser={currentUser} />
+            }
+          />
+          <Route
+            path="/admin"
+            element={<AdminPage currentUser={currentUser} />}
+          />
+          <Route path="/request" element={<RequestPage />} />
+          <Route path="/rewards" element={<RewardsPage />} />
+          <Route path="*" element={<Navigate to="/users" />} />
+        </Routes>
 
-      <Routes>
-        <Route path="/" element={<Navigate to="/users" />} />
-        <Route path="/users" element={<LeaderboardPage users={users} />} />
-        <Route
-          path="/users/:uid"
-          element={<UserProfilePage users={users} currentUser={currentUser} />}
-        />
-        <Route
-          path="/admin"
-          element={<AdminPage currentUser={currentUser} />}
-        />
-        <Route path="/request" element={<RequestPage />} />
-        <Route path="/rewards" element={<RewardsPage />} />
-        <Route path="*" element={<Navigate to="/users" />} />
-      </Routes>
-
-      <BottomNav uid={currentUser?.uid} />
+        <BottomNav uid={currentUser?.uid} />
+      </div>
     </Router>
   );
 };

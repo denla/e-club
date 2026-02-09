@@ -12,9 +12,11 @@
   background-repeat: no-repeat;
   background-size: 180%;
 
-  max-width: 900px;
+  max-width: 600px;
   margin: 0 auto;
   padding-top: var(--tg-top);
+
+  padding-bottom: 180px;
 }
 /* Анимация шапки */
 .top {

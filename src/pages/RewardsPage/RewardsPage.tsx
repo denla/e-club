@@ -5,8 +5,10 @@ import AppHeader from "../../features/AppHeader/AppHeader";
 import { InfoCard } from "../../features/InfoCard/InfoCard";
 import infocard_gift from "../../assets/images/info/infocard_gift.png";
 import styles from "./RewardsPage.module.css";
+import { useNavigate } from "react-router-dom";
 
 export const RewardsPage: React.FC = () => {
+  const navigate = useNavigate();
   return (
     <div className={styles.page}>
       <AppHeader />
@@ -15,13 +17,11 @@ export const RewardsPage: React.FC = () => {
       </div>
 
       <InfoCard
-        title="Поднимайся в общем рейтинге"
-        subtitle="Зарабатывай очки за активность и занимай первые строки"
+        title="Получай реальные награды"
+        subtitle="Зарабатывай очки за посещение матчей и получай реальные призы"
         image={infocard_gift}
-        buttonText="Узнать больше"
-        onClick={() =>
-          alert("Здесь будет подробная информация о топе болельщиков!")
-        }
+        buttonText="Отметить посещение"
+        onClick={() => navigate("/request")}
       />
 
       <Grid>
@@ -48,6 +48,7 @@ const Grid = styled.div`
   grid-template-columns: repeat(2, 1fr);
   gap: 8px;
   margin-top: 8px;
+  padding-bottom: 180px;
 `;
 
 const Card = styled.div`

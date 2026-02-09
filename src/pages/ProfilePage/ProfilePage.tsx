@@ -35,6 +35,8 @@ import AppHeader from "../../features/AppHeader/AppHeader";
 
 import arrow_right from "../../assets/icons/arrow_right.svg";
 
+import gradientBg from "../../assets/images/gradient_bg.png";
+
 /* =========================
    HELPERS
 ========================= */
@@ -478,7 +480,7 @@ const ProfileHeader = styled.div`
 `;
 
 const Page = styled.div`
-  max-width: 900px;
+  max-width: 600px;
   margin: 0 auto;
   width: 100vw;
   min-height: 100vh;
@@ -486,9 +488,11 @@ const Page = styled.div`
   user-select: none;
   padding-top: var(--tg-top);
 
-  background-image: url("../../assets/images/gradient_bg.png");
+  background-image: url(${gradientBg});
   background-repeat: no-repeat;
   background-size: 180%;
+
+  padding-bottom: 180px;
 `;
 
 const Center = styled.div`

@@ -9,15 +9,19 @@ import infocard_cup from "../../assets/images/info/infocard_cup.png";
 
 import AppHeader from "../../features/AppHeader/AppHeader";
 import { InfoCard } from "../../features/InfoCard/InfoCard";
+import { useNavigate } from "react-router-dom";
 
 type Props = {
   users: AppUser[];
+  uid?: string;
 };
 
-export const LeaderboardPage: React.FC<Props> = ({ users }) => {
+export const LeaderboardPage: React.FC<Props> = ({ users, uid }) => {
+  const navigate = useNavigate();
   const [query, setQuery] = useState("");
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const profileLink = uid ? `/users/${uid}` : "/users";
 
   // Режим активного поиска
   const isSearchActive = isSearchFocused || query.length > 0;
@@ -66,10 +70,8 @@ export const LeaderboardPage: React.FC<Props> = ({ users }) => {
           title="Поднимайся в общем рейтинге"
           subtitle="Зарабатывай очки за активность и занимай первые строки"
           image={infocard_cup}
-          buttonText="Узнать больше"
-          onClick={() =>
-            alert("Здесь будет подробная информация о топе болельщиков!")
-          }
+          buttonText="К ачивкам"
+          onClick={() => navigate(profileLink)}
         />
       </div>
 

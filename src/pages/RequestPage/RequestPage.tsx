@@ -1,29 +1,29 @@
 import React from "react";
 import styled from "styled-components";
-import formImg from "../../assets/images/welcome/welcome_img1.png";
+import formImg from "../../assets/images/welcome/request.png";
 
-// import requestImg from "../../assets/images/request/request.png"; // твоя картинка
+import { AppButton } from "../../features/AppButton/AppButton";
+
+const FORM_URL = "https://forms.yandex.ru/someform"; // <- замените на вашу форму
 
 export const RequestPage: React.FC = () => {
+  const openForm = () => {
+    window.open(FORM_URL, "_blank");
+  };
+
   return (
     <Page>
       <ImgWrapper>
         <img src={formImg} alt="Request" />
       </ImgWrapper>
 
-      <Title>
-        Создай заявку
-        <br /> на участие
-      </Title>
+      <Title>Заполни заявку</Title>
 
       <Description>
-        Заполни короткую форму, чтобы мы могли обработать твою заявку и дать
-        доступ к специальным активностям и наградам.
+        Открой форму и заполни заявку, чтобы повысить уровень и получать призы
       </Description>
 
-      <Button>Перейти к форме</Button>
-
-      {/* onClick={() => window.open(formUrl, "_blank")} */}
+      <AppButton onClick={openForm}>Открыть форму</AppButton>
     </Page>
   );
 };
@@ -40,6 +40,7 @@ const Page = styled.div`
   justify-content: center;
   align-items: center;
   text-align: center;
+  max-width: 600px;
 `;
 
 const ImgWrapper = styled.div`
@@ -55,32 +56,13 @@ const ImgWrapper = styled.div`
 `;
 
 const Title = styled.h1`
-  font-size: 20px;
+  font-size: 24px;
   margin-bottom: 16px;
-  font-family: "Disket Mono", monospace;
+  font-weight: 500;
 `;
 
 const Description = styled.p`
-  font-size: 16px;
-  margin-bottom: 32px;
   font-size: 14px;
+  margin-bottom: 32px;
   color: #9b9b9b;
-`;
-
-const Button = styled.button`
-  font-size: 12px;
-  background: #ff5a00;
-  width: 100%;
-  border: none;
-  color: #000;
-  font-weight: 700;
-  padding: 16px;
-  border-radius: 12px;
-  margin-bottom: 16px;
-  font-family: "Disket Mono", monospace;
-  transition: 0.2s ease;
-  outline: none;
-  &:hover {
-    background: #ff742e;
-  }
 `;

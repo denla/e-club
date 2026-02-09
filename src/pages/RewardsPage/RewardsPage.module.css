@@ -12,6 +12,7 @@
   background-repeat: no-repeat;
   background-size: 180%;
   padding-top: var(--tg-top);
+  max-width: 600px;
 }
 
 .topContent {

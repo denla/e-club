@@ -23,14 +23,14 @@ export const BottomNav = ({ uid }: Props) => {
 
   return (
     <nav className={styles.nav}>
-      <Link to="/request" className={styles.small}>
-        <div className={styles.plusButtonWrapper}>
+      <div className={styles.plusButtonWrapper}>
+        <Link to="/request" className={styles.small}>
           <button className={styles.plusButton}>
             <img src={plusIcon} alt="Visit" />
             <span>Посещение</span>
           </button>
-        </div>
-      </Link>
+        </Link>
+      </div>
       {/* Лидерборд */}
       <Link to="/users" className={styles.link}>
         <button
