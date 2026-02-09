@@ -84,7 +84,6 @@ export const LeaderboardPage: React.FC<Props> = ({ users, uid }) => {
         >
           {/* Левая иконка */}
           <img src={searchIcon} alt="Search" className={styles.leftIcon} />
-
           {/* Input */}
           <input
             ref={inputRef}
