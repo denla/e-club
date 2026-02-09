@@ -253,7 +253,7 @@ export const ProfilePage: React.FC<Props> = ({
         )}
 
         {currentUser?.role === "admin" && currentUser.uid !== user.uid && (
-          <AppButton
+          <AccentButton
             onClick={async () => {
               try {
                 const userRef = doc(db, "users", user.uid);
@@ -278,7 +278,7 @@ export const ProfilePage: React.FC<Props> = ({
             }}
           >
             Повысить рейтинг
-          </AppButton>
+          </AccentButton>
         )}
         <Separator />
         <Stats>
@@ -672,6 +672,19 @@ const CustomInput = styled.input`
   &:focus {
     border-color: #ff5a00;
   }
+`;
+
+const AccentButton = styled.button`
+  background: #ff5a00;
+  border: none;
+  color: #000;
+  font-weight: 700;
+  padding: 12px 20px;
+  border-radius: 50px;
+  margin-bottom: 16px;
+  font-family: "Disket Mono", monospace;
+  font-size: 12px;
+  width: 100%;
 `;
 
 const AvatarImage = styled.img`
