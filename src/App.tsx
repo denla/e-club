@@ -38,7 +38,7 @@ const MOCK_TG_USER: TelegramUser = {
   photo_url: "https://via.placeholder.com/100",
 };
 
-const USE_MOCK = true;
+const USE_MOCK = false;
 
 const App: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
