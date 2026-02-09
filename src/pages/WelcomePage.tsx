@@ -8,5 +8,4 @@ type Props = {
 const WelcomePage: React.FC<Props> = ({ onCreateAccount, tgReady }) => {
   return <WelcomeSlider onCreateAccount={onCreateAccount} tgReady={tgReady} />;
 };
-
 export default WelcomePage;

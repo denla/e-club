@@ -2,11 +2,9 @@ import { useRef, useState, useMemo } from "react";
 import styles from "./LeaderboardPage.module.css";
 import { LeaderboardItem } from "../../features/LeaderboardItem/LeaderboardItem";
 import type { User as AppUser } from "../../types";
-
 import searchIcon from "../../assets/icons/search_icon.svg";
 import closeIcon from "../../assets/icons/close_icon.svg";
 import infocard_cup from "../../assets/images/info/infocard_cup.png";
-
 import AppHeader from "../../features/AppHeader/AppHeader";
 import { InfoCard } from "../../features/InfoCard/InfoCard";
 import { useNavigate } from "react-router-dom";
