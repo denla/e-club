@@ -674,19 +674,6 @@ const CustomInput = styled.input`
   }
 `;
 
-const AccentButton = styled.button`
-  background: #ff5a00;
-  border: none;
-  color: #000;
-  font-weight: 700;
-  padding: 12px 20px;
-  border-radius: 50px;
-  margin-bottom: 16px;
-  font-family: "Disket Mono", monospace;
-  font-size: 12px;
-  width: 100%;
-`;
-
 const AvatarImage = styled.img`
   width: 90px;
   height: 90px;
