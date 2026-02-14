@@ -6,28 +6,20 @@
   align-items: center;
   justify-content: center;
   padding: 0 16px;
-  overflow: hidden;
   z-index: 100;
-
-  z-index: 1;
-  background: #14141445;
-  backdrop-filter: blur(16px);
-  mask: linear-gradient(
-    rgba(255, 255, 255, 1) 0%,
-    rgb(255, 255, 255, 1) 33%,
-    rgb(255, 255, 255, 0.8) 66%,
-    rgba(255, 255, 255, 0) 100%
-  );
+  transition: background 0.3s ease;
+  background: transparent; /* прозрачная по дефолту */
   padding-top: var(--tg-top);
 }
+
+.header.scrolled {
+  background: #00000086;
+  backdrop-filter: blur(14px);
+}
+
 .placeholder {
   height: var(--tg-top);
-  backdrop-filter: blur(16px);
-  z-index: 1;
-  background: #14141445;
   width: 100%;
-
-  z-index: 10000;
   position: fixed;
   top: 0;
 }
@@ -36,9 +28,13 @@
   height: 32px;
   object-fit: contain;
   position: relative;
-  z-index: 3; /* поверх blur и overlay */
+  z-index: 3;
 }
 
 .left {
   justify-content: flex-start;
+}
+
+.center {
+  justify-content: center;
 }
