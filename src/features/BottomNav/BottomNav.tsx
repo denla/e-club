@@ -10,7 +10,6 @@ import rewardsIcon from "../../assets/icons/BottomNav/rewards_icon.svg";
 interface Props {
   uid?: string;
 }
-
 export const BottomNav = ({ uid }: Props) => {
   const location = useLocation();
   const profileLink = uid ? `/users/${uid}` : "/users";
@@ -21,16 +20,21 @@ export const BottomNav = ({ uid }: Props) => {
   else if (location.pathname.startsWith("/rewards")) active = "rewards";
   else if (location.pathname === "/users") active = "leaderboard";
 
+  const showPlusButton = location.pathname !== "/request"; // скрываем на /request
+
   return (
     <nav className={styles.nav}>
-      <div className={styles.plusButtonWrapper}>
-        <Link to="/request" className={styles.small}>
-          <button className={styles.plusButton}>
-            <img src={plusIcon} alt="Visit" />
-            <span>Посещение</span>
-          </button>
-        </Link>
-      </div>
+      {showPlusButton && (
+        <div className={styles.plusButtonWrapper}>
+          <Link to="/request" className={styles.small}>
+            <button className={styles.plusButton}>
+              <img src={plusIcon} alt="Visit" />
+              <span>Посещение</span>
+            </button>
+          </Link>
+        </div>
+      )}
+
       {/* Лидерборд */}
       <Link to="/users" className={styles.link}>
         <button
@@ -54,8 +58,6 @@ export const BottomNav = ({ uid }: Props) => {
           <span>Призы</span>
         </button>
       </Link>
-
-      {/* Посещение */}
 
       {/* Профиль */}
       <Link to={profileLink} className={styles.link}>
