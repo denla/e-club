@@ -27,6 +27,7 @@ import { RewardsPage } from "./pages/RewardsPage/RewardsPage";
 import type { User, TelegramUser } from "./types";
 import Preloader from "./features/Preloader/Preloader";
 import { useTelegramInsets } from "./hooks/useTelegramInsets";
+import { LeaderboardSearchPage } from "./pages/LeaderboardSearchPage/LeaderboardSearchPage";
 
 // --- MOCK для разработки вне Telegram
 const MOCK_TG_USER: TelegramUser = {
@@ -38,7 +39,7 @@ const MOCK_TG_USER: TelegramUser = {
   photo_url: "https://via.placeholder.com/100",
 };
 
-const USE_MOCK = false;
+const USE_MOCK = true;
 
 const App: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
@@ -199,6 +200,11 @@ const App: React.FC = () => {
           <Route path="/request" element={<RequestPage />} />
           <Route path="/rewards" element={<RewardsPage />} />
           <Route path="*" element={<Navigate to="/users" />} />
+
+          <Route
+            path="/users/search"
+            element={<LeaderboardSearchPage users={users} />}
+          />
         </Routes>
 
         <BottomNav uid={currentUser?.uid} />

@@ -11,7 +11,7 @@ export const RewardsPage: React.FC = () => {
   const navigate = useNavigate();
   return (
     <div className={styles.page}>
-      <AppHeader />
+      <AppHeader title="Призы клуба" />
       <div className={styles.topContent}>
         Призы <span>от клуба</span>
       </div>
@@ -33,7 +33,7 @@ export const RewardsPage: React.FC = () => {
 
             <CardContent>
               <RewardTitle>{reward.reward}</RewardTitle>
-              <Level>{reward.level} посещений</Level>
+              <Level>{reward.level} уровень</Level>
             </CardContent>
           </Card>
         ))}
@@ -70,6 +70,7 @@ const ImageWrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+  height: 100%;
 `;
 
 const RewardImage = styled.img`

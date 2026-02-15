@@ -43,7 +43,7 @@ export const BottomNav = ({ uid }: Props) => {
           }`}
         >
           <img src={leaderboardIcon} alt="leaderboard" />
-          <span>Лидерборд</span>
+          <span>Топ лидеров</span>
         </button>
       </Link>
 

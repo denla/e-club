@@ -65,7 +65,7 @@ export const LeaderboardItem: React.FC<Props> = ({ user }) => {
         </div>
 
         {/* Ранг */}
-        <div className={styles.xpBadge}>{user.visitsCount * 10} XP</div>
+        <div className={styles.xpBadge}>{user.visitsCount} LVL</div>
       </div>
     </Link>
   );

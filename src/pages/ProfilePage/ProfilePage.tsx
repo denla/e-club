@@ -217,7 +217,7 @@ export const ProfilePage: React.FC<Props> = ({
   return (
     <Page>
       {/* ===== HEADER ===== */}
-      <AppHeader />
+      <AppHeader title="Профиль" />
       <ProfileHeader>
         <AvatarImage
           src={avatarUrl}
@@ -285,8 +285,8 @@ export const ProfilePage: React.FC<Props> = ({
         <Separator />
         <Stats>
           <StatCard>
-            <StatValue>{user.visitsCount * 10} XP</StatValue>
-            <StatLabel>Опыт за посещения</StatLabel>
+            <StatValue>{user.visitsCount} LVL</StatValue>
+            <StatLabel>Текущий уровень</StatLabel>
           </StatCard>
 
           <StatCard>
@@ -334,7 +334,7 @@ export const ProfilePage: React.FC<Props> = ({
                   src={unlocked ? a.activeIcon : a.inactiveIcon}
                 />
                 <AchievementText>
-                  <strong>{a.title}</strong>
+                  <AchievementTitle>{a.title}</AchievementTitle>
                   <span>{a.level} уровень</span>
                 </AchievementText>
               </AchievementCard>
@@ -594,6 +594,7 @@ const AchievementCard = styled.div<{ active: boolean }>`
   gap: 12px;
   padding: 12px;
   text-align: center;
+  linne-height: 110% !important;
 `;
 
 const AchievementImage = styled.img`
@@ -612,10 +613,18 @@ const AchievementText = styled.div`
   }
 `;
 
+const AchievementTitle = styled.div`
+  font-size: 14px;
+  line-height: 110%;
+  font-weight: 600;
+  margin: 8px 0;
+`;
+
 const HistoryGrid = styled.div`
   display: flex;
   flex-direction: column;
   gap: 0;
+  padding: 0 16px;
 `;
 
 const HistoryCard = styled.div`
@@ -623,15 +632,15 @@ const HistoryCard = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+  border-bottom: 1px solid #ffffff14;
+  font-size: 14px;
 `;
 
 const HistoryLevel = styled.div`
   font-weight: 600;
-  font-size: 14px;
 `;
 
 const HistoryDate = styled.div`
-  font-size: 12px;
   color: ${({ theme }) => theme.colors.muted};
 `;
 

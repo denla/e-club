@@ -1,13 +1,12 @@
-import { useRef, useState, useMemo } from "react";
+import { useMemo } from "react";
 import styles from "./LeaderboardPage.module.css";
 import { LeaderboardItem } from "../../features/LeaderboardItem/LeaderboardItem";
 import type { User as AppUser } from "../../types";
-import searchIcon from "../../assets/icons/search_icon.svg";
-import closeIcon from "../../assets/icons/close_icon.svg";
-import infocard_cup from "../../assets/images/info/infocard_cup.png";
 import AppHeader from "../../features/AppHeader/AppHeader";
 import { InfoCard } from "../../features/InfoCard/InfoCard";
+import infocard_cup from "../../assets/images/info/infocard_cup.png";
 import { useNavigate } from "react-router-dom";
+import searchIcon from "../../assets/icons/search_icon.svg";
 
 type Props = {
   users: AppUser[];
@@ -16,50 +15,18 @@ type Props = {
 
 export const LeaderboardPage: React.FC<Props> = ({ users, uid }) => {
   const navigate = useNavigate();
-  const [query, setQuery] = useState("");
-  const [isSearchFocused, setIsSearchFocused] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
   const profileLink = uid ? `/users/${uid}` : "/users";
-
-  // Режим активного поиска
-  const isSearchActive = isSearchFocused || query.length > 0;
-
-  // Фильтрация пользователей
-  const filteredUsers = useMemo(() => {
-    const search = query.toLowerCase().trim();
-    if (!search) return users;
-
-    return users.filter((user) => {
-      const fullText = [user.firstName, user.lastName, user.telegram?.username]
-        .filter(Boolean)
-        .join(" ")
-        .toLowerCase();
-
-      return fullText.includes(search);
-    });
-  }, [users, query]);
 
   // Сортировка по visitsCount
   const leaderboardUsers = useMemo(() => {
-    return [...filteredUsers].sort((a, b) => b.visitsCount - a.visitsCount);
-  }, [filteredUsers]);
-
-  // Очистка поиска
-  const exitSearch = () => {
-    setQuery("");
-    setIsSearchFocused(false);
-    inputRef.current?.blur();
-  };
+    return [...users].sort((a, b) => b.visitsCount - a.visitsCount);
+  }, [users]);
 
   return (
-    <div
-      className={`${styles.page} ${isSearchActive ? styles.noBackground : ""}`}
-    >
-      <AppHeader />
-      {/* Верхняя часть */}
-      <div
-        className={`${styles.top} ${isSearchActive ? styles.collapsed : ""}`}
-      >
+    <div className={styles.page}>
+      <AppHeader title="Топ лидеров" />
+
+      <div className={styles.top}>
         <div className={styles.topContent}>
           Лучшие <span>болельщики</span>
         </div>
@@ -72,35 +39,20 @@ export const LeaderboardPage: React.FC<Props> = ({ users, uid }) => {
           onClick={() => navigate(profileLink)}
         />
       </div>
-      {/* Список */}
+
+      {/* Поиск — просто переход на новую страницу */}
       <div className={styles.list}>
         <div
-          className={`${styles.searchWrapper} ${
-            isSearchActive ? styles.focused : ""
-          }`}
+          className={styles.searchWrapper}
+          onClick={() => navigate("/users/search")}
+          style={{ cursor: "pointer" }}
         >
-          {/* Левая иконка */}
           <img src={searchIcon} alt="Search" className={styles.leftIcon} />
-          {/* Input */}
           <input
-            ref={inputRef}
             className={styles.search}
             placeholder="Поиск болельщиков"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            onFocus={() => setIsSearchFocused(true)}
+            readOnly
           />
-
-          {/* Кнопка очистки */}
-          {isSearchActive && (
-            <div
-              className={styles.clearButton}
-              onMouseDown={(e) => e.preventDefault()}
-              onClick={exitSearch}
-            >
-              <img src={closeIcon} alt="Close" />
-            </div>
-          )}
         </div>
 
         {leaderboardUsers.map((user, index) => (

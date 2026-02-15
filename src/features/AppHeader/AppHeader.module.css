@@ -1,36 +1,58 @@
+.container {
+  width: 100%;
+}
+
+/* обычная шапка */
 .header {
-  position: fixed;
   width: 100%;
   height: 60px;
   display: flex;
   align-items: center;
-  justify-content: center;
   padding: 0 16px;
   z-index: 100;
-  transition: background 0.3s ease;
-  background: transparent; /* прозрачная по дефолту */
+  transition:
+    background 0.3s ease,
+    backdrop-filter 0.3s ease;
+  background: transparent;
   padding-top: var(--tg-top);
 }
 
-.header.scrolled {
-  background: #00000086;
-  backdrop-filter: blur(14px);
-}
-
-.placeholder {
-  height: var(--tg-top);
-  width: 100%;
+/* фиксированная версия (если есть title) */
+.fixed {
   position: fixed;
   top: 0;
+  left: 0;
 }
 
+/* фон при скролле */
+.scrolled {
+  background: #000000ac;
+  backdrop-filter: blur(18px);
+  border-bottom: 1px solid #ffffff14;
+}
+
+/* заглушка под fixed header */
+.placeholder {
+  height: calc(60px + var(--tg-top));
+  width: 100%;
+}
+
+/* лого */
 .logo {
   height: 32px;
   object-fit: contain;
-  position: relative;
-  z-index: 3;
 }
 
+/* заголовок */
+.title {
+  width: 100%;
+  text-align: center;
+  font-size: 15px;
+  font-weight: 600;
+  color: white;
+}
+
+/* выравнивание */
 .left {
   justify-content: flex-start;
 }
