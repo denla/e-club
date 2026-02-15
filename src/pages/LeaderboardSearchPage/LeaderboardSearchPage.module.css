@@ -9,7 +9,7 @@
   width: 100%;
   max-width: 660px;
 
-  padding-top: var(--tg-top);
+  /* padding-top: var(--tg-top); */
 
   display: flex;
   flex-direction: column;
