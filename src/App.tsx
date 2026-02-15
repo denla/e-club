@@ -23,11 +23,11 @@ import WelcomePage from "./pages/WelcomePage";
 import { RequestPage } from "./pages/RequestPage/RequestPage";
 import { AdminPage } from "./pages/AdminPage";
 import { RewardsPage } from "./pages/RewardsPage/RewardsPage";
+import { LeaderboardSearchPage } from "./pages/LeaderboardSearchPage/LeaderboardSearchPage";
 
 import type { User, TelegramUser } from "./types";
 import Preloader from "./features/Preloader/Preloader";
 import { useTelegramInsets } from "./hooks/useTelegramInsets";
-import { LeaderboardSearchPage } from "./pages/LeaderboardSearchPage/LeaderboardSearchPage";
 
 // --- MOCK для разработки вне Telegram
 const MOCK_TG_USER: TelegramUser = {
@@ -39,7 +39,7 @@ const MOCK_TG_USER: TelegramUser = {
   photo_url: "https://via.placeholder.com/100",
 };
 
-const USE_MOCK = true;
+const USE_MOCK = false;
 
 const App: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
@@ -49,6 +49,13 @@ const App: React.FC = () => {
 
   useTelegramInsets();
 
+  // 🔹 Получаем Telegram user синхронно
+  const getTelegramUser = (): TelegramUser | null => {
+    if (USE_MOCK) return MOCK_TG_USER;
+    return window.Telegram?.WebApp?.initDataUnsafe?.user ?? null;
+  };
+
+  // 🔹 Подписка на users
   useEffect(() => {
     const unsubUsers = onSnapshot(
       collection(db, "users"),
@@ -63,15 +70,14 @@ const App: React.FC = () => {
       },
     );
 
+    return () => unsubUsers();
+  }, []);
+
+  // 🔹 Инициализация приложения
+  useEffect(() => {
     const init = async () => {
       try {
-        // Telegram ready (без отображения пользователю)
-        if (window.Telegram?.WebApp) {
-          window.Telegram.WebApp.ready();
-          window.Telegram.WebApp.expand();
-        }
-
-        const tgUser = await waitForTelegramUser();
+        const tgUser = getTelegramUser();
 
         if (!tgUser) {
           setNeedsRegistration(true);
@@ -90,46 +96,24 @@ const App: React.FC = () => {
         console.error("Init error:", error);
         setNeedsRegistration(true);
       } finally {
+        // ⚠️ loading снимается ВСЕГДА
         setLoading(false);
       }
     };
 
     init();
-
-    return () => unsubUsers();
   }, []);
 
-  // --- ожидание Telegram user (без зависаний)
-  const waitForTelegramUser = async (): Promise<TelegramUser | null> => {
-    if (USE_MOCK) return MOCK_TG_USER;
-
-    const maxAttempts = 25; // ~5 секунд
-    let attempts = 0;
-
-    return new Promise((resolve) => {
-      const check = () => {
-        const user = window.Telegram?.WebApp?.initDataUnsafe?.user;
-
-        if (user) {
-          resolve(user as TelegramUser);
-          return;
-        }
-
-        attempts++;
-        if (attempts >= maxAttempts) {
-          resolve(null);
-          return;
-        }
-
-        setTimeout(check, 200);
-      };
-
-      check();
-    });
-  };
+  // 🔹 Сообщаем Telegram, что UI готов
+  useEffect(() => {
+    if (!loading && window.Telegram?.WebApp) {
+      window.Telegram.WebApp.expand();
+      window.Telegram.WebApp.ready();
+    }
+  }, [loading]);
 
   const createAccount = async () => {
-    const tgUser = await waitForTelegramUser();
+    const tgUser = getTelegramUser();
     if (!tgUser) return;
 
     const uid = String(tgUser.id);
@@ -165,6 +149,8 @@ const App: React.FC = () => {
     }
   };
 
+  // 🔹 UI состояния
+
   if (loading) return <Preloader />;
 
   if (needsRegistration)
@@ -199,12 +185,11 @@ const App: React.FC = () => {
           />
           <Route path="/request" element={<RequestPage />} />
           <Route path="/rewards" element={<RewardsPage />} />
-          <Route path="*" element={<Navigate to="/users" />} />
-
           <Route
             path="/users/search"
             element={<LeaderboardSearchPage users={users} />}
           />
+          <Route path="*" element={<Navigate to="/users" />} />
         </Routes>
 
         <BottomNav uid={currentUser?.uid} />

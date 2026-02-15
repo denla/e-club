@@ -1,29 +1,30 @@
 /* LeaderboardSearchPage.module.css */
+
 .page {
-  min-height: 100vh;
+  height: calc(100vh - 40px);
   background: #000;
   color: #fff;
-  padding-bottom: 180px;
+
   margin: 0 auto;
-  padding-left: 8px;
-  padding-right: 8px;
   width: 100%;
   max-width: 660px;
-  padding: 0 16px;
+
+  padding-top: var(--tg-top);
+
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
 }
 
+/* Header + Search (не скроллится) */
 .searchHeader {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 16px 0;
-  position: sticky;
-  top: var(--tg-top, 0);
-  background: #000;
-  z-index: 10;
-  padding-top: calc(var(--tg-top) + 12px);
+  padding: 16px;
 }
 
+/* Поле поиска */
 .searchWrapper {
   flex: 1;
   display: flex;
@@ -39,7 +40,6 @@
   align-items: center;
   justify-content: center;
   font-size: 16px;
-  margin-right: 8px;
 }
 
 .search {
@@ -63,6 +63,7 @@
   cursor: pointer;
 }
 
+/* Кнопка закрытия */
 .closeButton {
   background: none;
   border: none;
@@ -72,14 +73,20 @@
   cursor: pointer;
 }
 
+/* Скроллируемый список */
 .list {
+  flex: 1;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
   gap: 0;
-  margin-top: 16px;
+
+  padding-bottom: 180px; /* чтобы не перекрывал BottomNav */
+  -webkit-overflow-scrolling: touch;
+  padding: 0 16px;
 }
 
-/* LeaderboardSearchPage.module.css */
+/* Пустой результат */
 .emptyState {
   text-align: center;
   color: #888;

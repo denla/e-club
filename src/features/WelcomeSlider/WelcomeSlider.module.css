@@ -7,9 +7,9 @@
   flex-direction: column;
   overflow: hidden;
   width: 100vw;
-  background-image: url("../../assets/images/gradient_bg.png");
-  background-repeat: no-repeat;
-  background-size: 180%;
+  /* background-image: url("../../assets/images/gradient_bg.png"); */
+  /* background-repeat: no-repeat;
+  background-size: 180%; */
   padding-top: var(--tg-top);
 }
 

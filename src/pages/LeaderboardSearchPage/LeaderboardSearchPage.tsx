@@ -6,6 +6,7 @@ import { LeaderboardItem } from "../../features/LeaderboardItem/LeaderboardItem"
 import type { User as AppUser } from "../../types";
 import searchIcon from "../../assets/icons/search_icon.svg";
 import closeIcon from "../../assets/icons/close_icon.svg";
+import AppHeader from "../../features/AppHeader/AppHeader";
 
 type Props = {
   users: AppUser[];
@@ -40,6 +41,7 @@ export const LeaderboardSearchPage: React.FC<Props> = ({ users }) => {
 
   return (
     <div className={styles.page}>
+      <AppHeader />
       <div className={styles.searchHeader}>
         <div className={styles.searchWrapper}>
           <img src={searchIcon} alt="Search" className={styles.leftIcon} />
