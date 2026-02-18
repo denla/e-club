@@ -4,7 +4,7 @@ import formImg from "../../assets/images/welcome/request.png";
 
 import { AppButton } from "../../features/AppButton/AppButton";
 
-const FORM_URL = "https://forms.yandex.ru/someform"; // <- замените на вашу форму
+const FORM_URL = "https://forms.yandex.ru/cloud/698a31b7068ff0d347f4268f/"; // <- замените на вашу форму
 
 export const RequestPage: React.FC = () => {
   const openForm = () => {

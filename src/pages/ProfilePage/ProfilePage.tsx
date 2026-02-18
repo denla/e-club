@@ -37,6 +37,8 @@ import arrow_right from "../../assets/icons/arrow_right.svg";
 
 import gradientBg from "../../assets/images/gradient_bg.png";
 
+import { motion } from "framer-motion";
+
 /* =========================
    HELPERS
 ========================= */
@@ -305,18 +307,37 @@ export const ProfilePage: React.FC<Props> = ({
 
       {/* ===== TABS ===== */}
       <HorizontalTabs>
-        <HorizontalTabButton
-          active={tab === "achievements"}
-          onClick={() => setTab("achievements")}
-        >
-          Достижения
-        </HorizontalTabButton>
-        <HorizontalTabButton
-          active={tab === "history"}
-          onClick={() => setTab("history")}
-        >
-          История
-        </HorizontalTabButton>
+        {["achievements", "history"].map((key) => {
+          const isActive = tab === key;
+
+          return (
+            <HorizontalTabButton
+              key={key}
+              active={isActive}
+              onClick={() => setTab(key as TabType)}
+            >
+              {isActive && (
+                <motion.div
+                  layoutId="activeTab"
+                  style={{
+                    position: "absolute",
+                    inset: 0,
+                    borderRadius: 50,
+                    background: "#fff",
+                    zIndex: 0, // фон под текстом
+                  }}
+                  transition={{
+                    duration: 0.15,
+                    ease: "easeInOut", // более стандартная анимация
+                  }}
+                />
+              )}
+              <span style={{ position: "relative", zIndex: 1 }}>
+                {key === "achievements" ? "Достижения" : "История"}
+              </span>
+            </HorizontalTabButton>
+          );
+        })}
       </HorizontalTabs>
 
       {/* ===== ACHIEVEMENTS ===== */}
@@ -486,7 +507,6 @@ const Page = styled.div`
   min-height: 100vh;
   cursor: default;
   user-select: none;
-  padding-top: var(--tg-top);
 
   background-image: url(${gradientBg});
   background-repeat: no-repeat;
@@ -570,14 +590,18 @@ const HorizontalTabs = styled.div`
   border-radius: 20px;
   margin: 24px auto;
   width: fit-content;
+  position: relative;
+  padding: 4px;
 `;
 
 const HorizontalTabButton = styled.button<{ active: boolean }>`
+  position: relative;
   padding: 12px 20px;
   border-radius: 50px;
-  background: ${({ active }) => (active ? "#fff" : "transparent")};
+  background: transparent;
   color: ${({ active }) => (active ? "#000" : "#fff")};
   font-size: 14px;
+  z-index: 1;
 `;
 
 const AchievementsGrid = styled.div`

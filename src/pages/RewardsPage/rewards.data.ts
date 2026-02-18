@@ -1,16 +1,16 @@
 import type { ClubReward } from "../../types/reward";
-import Pin from "../../assets/images/rewards/pin.png";
-import Mug from "../../assets/images/rewards/mug.png";
-import Poster from "../../assets/images/rewards/poster.png";
-import Scarf from "../../assets/images/rewards/scarf.png";
-// import Photoshoot from "../../assets/images/rewards/camera.png";
-import TShirt from "../../assets/images/rewards/tshirt.png";
-// import Medal from "../../assets/images/rewards/medal.png";
-// import TrainingPlan from "../../assets/images/rewards/cup_white.png";
-import AlumniCard from "../../assets/images/rewards/card_white.png";
-import PhotoCard from "../../assets/images/rewards/photo_cards.png";
-import Thanks from "../../assets/images/rewards/thanks.png";
-import List from "../../assets/images/rewards/list.png";
+import Pin from "../../assets/images/rewards/pin.webp";
+import Mug from "../../assets/images/rewards/mug.webp";
+import Poster from "../../assets/images/rewards/poster.webp";
+import Scarf from "../../assets/images/rewards/scarf.webp";
+// import Photoshoot from "../../assets/images/rewards/camera.webp";
+import TShirt from "../../assets/images/rewards/tshirt.webp";
+// import Medal from "../../assets/images/rewards/medal.webp";
+// import TrainingPlan from "../../assets/images/rewards/cup_white.webp";
+import AlumniCard from "../../assets/images/rewards/card_white.webp";
+import PhotoCard from "../../assets/images/rewards/photo_cards.webp";
+import Thanks from "../../assets/images/rewards/thanks.webp";
+import List from "../../assets/images/rewards/list.webp";
 
 export const CLUB_REWARDS: ClubReward[] = [
   {
