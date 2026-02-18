@@ -73,7 +73,7 @@ const Overlay = styled.div<{ visible: boolean }>`
   display: ${({ visible }) => (visible ? "flex" : "none")};
   justify-content: center;
   align-items: flex-end;
-  z-index: 1000;
+  z-index: 100000;
 `;
 
 const Content = styled.div`
