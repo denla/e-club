@@ -8,6 +8,7 @@
   backdrop-filter: blur(10px);
   display: flex;
   padding-bottom: var(--tg-bottom);
+  z-index: 10000;
 }
 
 .link {
