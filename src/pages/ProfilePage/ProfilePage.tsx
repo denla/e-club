@@ -587,7 +587,7 @@ const StatLabel = styled.div`
 const HorizontalTabs = styled.div`
   display: flex;
   background: ${({ theme }) => theme.colors.card};
-  border-radius: 20px;
+  border-radius: 50px;
   margin: 24px auto;
   width: fit-content;
   position: relative;
