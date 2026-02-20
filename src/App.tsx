@@ -75,33 +75,35 @@ const App: React.FC = () => {
 
   // 🔹 Инициализация приложения
   useEffect(() => {
-    const init = async () => {
-      try {
-        const tgUser = getTelegramUser();
+    let interval: number; // <- вот здесь, НЕ NodeJS.Timer
 
-        if (!tgUser) {
-          setNeedsRegistration(true);
-          return;
-        }
+    const checkTelegramUser = async () => {
+      const tgUser = getTelegramUser();
 
+      if (tgUser) {
+        clearInterval(interval); // браузерный clearInterval принимает number
         const uid = String(tgUser.id);
-        const docSnap = await getDoc(doc(db, "users", uid));
+        try {
+          const docSnap = await getDoc(doc(db, "users", uid));
 
-        if (docSnap.exists()) {
-          setCurrentUser(docSnap.data() as User);
-        } else {
+          if (docSnap.exists()) {
+            setCurrentUser(docSnap.data() as User);
+          } else {
+            setNeedsRegistration(true);
+          }
+        } catch (error) {
+          console.error("Init error:", error);
           setNeedsRegistration(true);
+        } finally {
+          setLoading(true);
         }
-      } catch (error) {
-        console.error("Init error:", error);
-        setNeedsRegistration(true);
-      } finally {
-        // ⚠️ loading снимается ВСЕГДА
-        setLoading(false);
       }
     };
 
-    init();
+    checkTelegramUser();
+    interval = window.setInterval(checkTelegramUser, 500); // <- используем window.setInterval
+
+    return () => clearInterval(interval);
   }, []);
 
   // 🔹 Сообщаем Telegram, что UI готов

@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import styled from "styled-components";
 
 interface DrawerProps {
@@ -13,40 +13,59 @@ export const Drawer: React.FC<DrawerProps> = ({
   children,
 }) => {
   const drawerRef = useRef<HTMLDivElement>(null);
-  const [startY, setStartY] = useState<number | null>(null);
+  const startYRef = useRef<number>(0);
+  const currentYRef = useRef<number>(0);
+  const [isDragging, setIsDragging] = useState(false);
 
-  // Начало свайпа
-  const handleTouchStart = (e: React.TouchEvent) => {
-    setStartY(e.touches[0].clientY);
-  };
-
-  // Движение свайпа
-  const handleTouchMove = (e: React.TouchEvent) => {
-    if (startY !== null && drawerRef.current) {
-      const deltaY = e.touches[0].clientY - startY;
-      if (deltaY > 0) {
-        drawerRef.current.style.transform = `translateY(${deltaY}px)`;
-      }
-    }
-  };
-
-  // Конец свайпа
-  const handleTouchEnd = () => {
+  // Используем rAF для плавного обновления
+  const updatePosition = () => {
     if (drawerRef.current) {
-      const transformY = parseInt(
-        drawerRef.current.style.transform
-          .replace("translateY(", "")
-          .replace("px)", ""),
-      );
-      if (transformY > 100) {
-        // свайп вниз на >100px закрывает
-        onClose();
-      } else {
-        drawerRef.current.style.transform = "translateY(0)";
-      }
+      drawerRef.current.style.transform = `translateY(${currentYRef.current}px)`;
     }
-    setStartY(null);
   };
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    startYRef.current = e.touches[0].clientY;
+    setIsDragging(true);
+    if (drawerRef.current) {
+      drawerRef.current.style.transition = "none";
+    }
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!isDragging) return;
+    const deltaY = e.touches[0].clientY - startYRef.current;
+    if (deltaY > 0) {
+      currentYRef.current = deltaY;
+      requestAnimationFrame(updatePosition);
+    }
+  };
+
+  const handleTouchEnd = () => {
+    setIsDragging(false);
+    if (!drawerRef.current) return;
+
+    drawerRef.current.style.transition = "transform 0.3s ease";
+
+    if (currentYRef.current > 100) {
+      // свайп вниз на >100px закрывает
+      drawerRef.current.style.transform = `translateY(100%)`;
+      setTimeout(onClose, 300); // закрываем после анимации
+    } else {
+      // возвращаем обратно
+      currentYRef.current = 0;
+      drawerRef.current.style.transform = "translateY(0)";
+    }
+  };
+
+  // Сбрасываем позицию при открытии заново
+  useEffect(() => {
+    if (isOpen && drawerRef.current) {
+      drawerRef.current.style.transition = "transform 0.3s ease";
+      currentYRef.current = 0;
+      drawerRef.current.style.transform = "translateY(0)";
+    }
+  }, [isOpen]);
 
   return (
     <Overlay visible={isOpen} onClick={onClose}>
@@ -90,6 +109,7 @@ const Content = styled.div`
   touch-action: none;
   gap: 12px;
   flex-direction: column;
+  transform: translateY(100%);
   @keyframes slideUp {
     from {
       transform: translateY(100%);
