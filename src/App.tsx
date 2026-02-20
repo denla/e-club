@@ -95,7 +95,7 @@ const App: React.FC = () => {
           console.error("Init error:", error);
           setNeedsRegistration(true);
         } finally {
-          setLoading(true);
+          setLoading(false);
         }
       }
     };
