@@ -49,8 +49,39 @@
 }
 
 /* Кнопка перезагрузки */
+.reload-card {
+  margin-top: 24px;
+  padding: 12px;
+  /* background: #111; */
+  border-radius: 16px;
+  text-align: center;
+  max-width: 320px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  opacity: 0;
+  transform: translateY(10px);
+  animation: fadeInUp 0.2s ease forwards;
+
+  bottom: 32px;
+  position: fixed;
+}
+
+@keyframes fadeInUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.reload-text {
+  color: #ffffff90;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
 .reload-button {
-  margin-top: 20px;
   padding: 8px 16px;
   background: rgba(255, 255, 255, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.3);

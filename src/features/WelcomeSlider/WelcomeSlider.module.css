@@ -1,5 +1,5 @@
 .wrapper {
-  min-height: 100vh;
+  min-height: 100dvh;
   background: #000;
   color: #fff;
   padding: 16px;
@@ -7,9 +7,6 @@
   flex-direction: column;
   overflow: hidden;
   width: 100vw;
-  /* background-image: url("../../assets/images/gradient_bg.png"); */
-  /* background-repeat: no-repeat;
-  background-size: 180%; */
   padding-top: var(--tg-top);
 }
 
@@ -165,18 +162,20 @@
   min-width: 100%;
   display: flex;
   flex-direction: column;
-  justify-content: flex-start; /* или space-between, если хочешь заголовок снизу */
+  justify-content: flex-start; /* можно space-between для равномерного распределения */
   align-items: center;
   padding: 0 16px;
-  height: calc(100vh - 250px);
+  height: calc(100dvh - 180px); /* меньше вычитаем для кнопки + header */
+  box-sizing: border-box; /* важно для паддингов */
 }
 
 .img_wrapper {
-  flex: 1 1 auto; /* занимает всё доступное пространство */
-  min-height: 0; /* важно для корректного расчёта flex */
+  flex: 1 1 auto;
+  min-height: 0;
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 100%;
 }
 
 @keyframes scaleUp {
@@ -192,9 +191,9 @@
 
 .image {
   max-height: 100%;
-  width: 300px;
+  width: auto;
+  max-width: 90%;
   object-fit: contain;
-  /* добавляем анимацию появления */
   animation: scaleUp 0.3s ease forwards;
 }
 
